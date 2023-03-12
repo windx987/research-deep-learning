@@ -11,3 +11,5 @@ print(torch.cuda.is_available())
 #scalar
 scalar  = torch.tensor(7)
 print(scalar)
+
+print(torch.cuda)
