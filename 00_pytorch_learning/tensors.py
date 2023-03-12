@@ -69,3 +69,5 @@ float_32_tensor = torch.tensor([3.0, 6.0, 9.0],
                                device=None,
                                requires_grad=False)
 print(float_32_tensor.shape, float_32_tensor.dtype, float_32_tensor.device)
+
+#test
