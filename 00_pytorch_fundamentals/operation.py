@@ -5,6 +5,10 @@ import matplotlib.pyplot as plt
 import subprocess
 import time
 
+# start_time = time.time()
+# end_time = time.time()
+# print("Execution time:", end_time - start_time, "seconds")
+
 # manipulating tensors [tensor operations]
 # Tensor opertions include: Addition, Subtraction, Multiplication, Division, Matrix multiplication
 
@@ -30,12 +34,12 @@ print(tensor / 10)
 
 # There are two main rules that performing "matrix mutliplication" needs to satisfy:
 
-# 1. The inner dimensions must match:
+# 1. The "inner dimensions" must match:
 #   • (3, 2) @ (3, 2) won't work
 #   • (2, 3) @ (3, 2) will work
 #   • (3, 2) @ (2, 3) will work
 
-# 2. The resulting matrix has the shape of the outer dimensions:
+# 2. The resulting matrix has the shape of the "outer dimensions":
 #   • (2, 3) @ (3, 2) -> (2, 2)
 #   • (3, 2) @ (2, 3) -> (3, 3)
 
@@ -49,21 +53,43 @@ print(tensor, "*", tensor)
 print(f"Equals: {tensor*tensor}")
 
 # Matrix multiplication
-print(torch.matmul(tensor, tensor))
+print(torch.matmul(tensor, tensor)) 
 
-start_time = time.time()
 value = 0
 for i in range(len(tensor)): 
     value += tensor [i] * tensor [i]
 print (value)
-end_time = time.time()
-print("Execution time:", end_time - start_time, "seconds")
-
-
-start_time = time.time()
-print(torch.matmul(tensor, tensor))
-end_time = time.time() 
-print("Execution time:", end_time - start_time, "seconds")
-
 
 # one of the most common errors in deep learning (shape errors)
+
+# shape for matrix multiplication
+
+tensor_A = torch.tensor([[1, 2],
+                         [3, 4],
+                         [5, 6]])
+
+tensor_B = torch.tensor([[7, 10],
+                         [8, 11],
+                         [9, 12]])
+
+print(f"Shape of tensor: {tensor_A.shape}") # (3, 2)
+print(f"Shape of tensor: {tensor_B.shape}") # (3, 2)
+
+#print(torch.mm(tensor_A, tensor_B))    # same as torch.matmul() // (3, 2) @ (3, 2) won't work
+print(torch.mm(tensor_A, tensor_B.T))   # (3, 2) @ (3, 2) will work with tensor.T
+
+# To fix our tensor shape issues, we can manipulate the shape of one of our tensors using a transpose.
+# A transpose switches the axes or dimensions of a given tensor.
+# By use torch.transpose(input, dim0, dim1) or tensor.T
+
+print(tensor_B.shape)
+print(tensor_B.T.shape)
+
+print("\n")
+print(f"Original shapes: tensor_A = {tensor_A.shape}, tensor_B = {tensor_B.shape}\n")
+print(f"New shapes: tensor_A = {tensor_A.shape} (same as above), tensor_B.T = {tensor_B.T.shape}\n")
+print(f"Multiplying: {tensor_A.shape} * {tensor_B.T.shape} <- inner dimensions match\n")
+print("Output:\n")
+output = torch.matmul(tensor_A, tensor_B.T)
+print(output) 
+print(f"\nOutput shape: {output.shape}")
