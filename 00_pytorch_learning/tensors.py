@@ -64,10 +64,28 @@ print(ten_zeros)
 
 #tensor datatypes
 
-float_32_tensor = torch.tensor([3.0, 6.0, 9.0],
-                               dtype=None,
-                               device=None,
-                               requires_grad=False)
+float_32_tensor = torch.tensor([3.5, 6.5, 9.5],
+                               dtype=None, # defult is float 16
+                               device=None, # 2 type are cpu, cuda //defult is cpu.
+                               requires_grad=False) # recorded tensor
 print(float_32_tensor.shape, float_32_tensor.dtype, float_32_tensor.device)
 
-#test
+float_16_tensor = float_32_tensor.type(torch.float16) 
+print(float_16_tensor)
+
+int_32_tensor = torch.tensor([3, 6, 9], dtype=torch.int32)
+print(int_32_tensor)
+
+mul=float_32_tensor*int_32_tensor
+print(mul, mul.dtype)
+
+# Getting information from tensors
+# 1. Tensors not right datatype - to do get datatype from a tensor, can use "tensor.dtype"
+# 2. Tensors not right shape - to get shape from a tensor, can use "tensor.shape"
+# 3. Tensors not on the right device - to get device from a tensor, can use "tensor.device"
+
+# find out details about some tensor
+some_tensor = torch.rand(3, 4)
+print(some_tensor)
+print(some_tensor.size(),some_tensor.shape) # does the same thing but one is function and the one is attribute
+
