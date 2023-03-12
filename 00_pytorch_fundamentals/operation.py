@@ -148,14 +148,18 @@ print("\n")
 
 # stack tensors on top of each other
 x_stracked = torch.stack([x, x, x, x], dim=0)
-print(x_stracked)
+print(x_stracked, x_stracked.shape,"\n")
 x_stracked = torch.stack([x, x, x, x], dim=1)
-print(x_stracked)
-print("\n")
+print(x_stracked, x_stracked.shape,"\n")
+
+
 
 x_stracked = torch.hstack([x, x], out=None)
-print(x_stracked)
+print(x_stracked, x_stracked.shape,"\n")
 x_stracked = torch.vstack([x, x], out=None)
-print(x_stracked)
+print(x_stracked, x_stracked.shape,"\n")
 
 #page 25 bye bye sleep well
+
+
+
