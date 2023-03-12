@@ -30,7 +30,7 @@ print(tensor / 10)
 # Two main ways of performing multiplication in neural networks and deep learning
 # 1. Element-wise multilication
 # 2. Matrix multiplication (dot.product)
-# More information on multiplying matrices https://www.mathsisfun.com/algebra/matrix—multiplying.html
+# More information on multiplying matrices http://matrixmultiplication.xyz/
 
 # There are two main rules that performing "matrix mutliplication" needs to satisfy:
 
@@ -85,7 +85,7 @@ print(torch.mm(tensor_A, tensor_B.T))   # (3, 2) @ (3, 2) will work with tensor.
 print(tensor_B.shape)
 print(tensor_B.T.shape)
 
-print("\n")
+print("\n") # http://matrixmultiplication.xyz/
 print(f"Original shapes: tensor_A = {tensor_A.shape}, tensor_B = {tensor_B.shape}\n")
 print(f"New shapes: tensor_A = {tensor_A.shape} (same as above), tensor_B.T = {tensor_B.T.shape}\n")
 print(f"Multiplying: {tensor_A.shape} * {tensor_B.T.shape} <- inner dimensions match\n")
@@ -93,3 +93,19 @@ print("Output:\n")
 output = torch.matmul(tensor_A, tensor_B.T)
 print(output) 
 print(f"\nOutput shape: {output.shape}")
+
+# find min, max, mean, sum, etc (tensor aggregation)
+x = torch.arange(0, 100, 10) # long dtype
+print(x)
+
+# find min
+print(torch.min(x), x.min())
+
+# find max
+print(torch.max(x), x.max())
+
+# find mean
+print(torch.mean(x.type(torch.float32)), x.type(torch.float32).mean())
+# RuntimeError: mean(): could not infer output dtype. 
+# Input dtype must be either "a floating point" or "complex" dtype. Got: Long
+
