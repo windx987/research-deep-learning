@@ -34,3 +34,14 @@ print(TENSOR.shape) # 1,3,3
 print(TENSOR[0])
 print(TENSOR[0][1])
 print(TENSOR[0][1][2])
+
+#random tensor
+random_tensor = torch.rand(3, 4) #torch.rand(4, 4, 4)
+print(random_tensor)
+
+#create random tensor of [colour_channels, height, width]
+random_image_size_tensor = torch.rand(size=(3, 224, 224))
+print(random_image_size_tensor.shape,random_image_size_tensor.ndim)
+print(random_image_size_tensor[0][1])
+
+#
