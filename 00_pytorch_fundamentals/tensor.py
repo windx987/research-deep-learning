@@ -46,12 +46,12 @@ random_tensor = torch.rand(3, 4) #torch.rand(4, 4, 4)
 print(random_tensor)
 
 #create random tensor of [height, width, color_channels]
-random_image_size_tensor = torch.rand(size=(224, 224, 3)) #defult is size=
+random_image_size_tensor = torch.rand(size=(224, 224, 3))
 print(random_image_size_tensor.shape,random_image_size_tensor.ndim)
 print(random_image_size_tensor[0][1])
 
 #zero and one
-zeros = torch.zeros(3, 4)
+zeros = torch.zeros(3, 4) # by defult is size=
 print(zeros, zeros.dtype)
 
 ones = torch.ones(3, 4)
