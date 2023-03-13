@@ -12,12 +12,15 @@ import time
 # manipulating tensors [tensor operations]
 # Tensor opertions include: Addition, Subtraction, Multiplication, Division, Matrix multiplication
 
-# Addition
 tensor = torch.tensor([1, 2, 3])
+
+# Addition
 print(tensor + 10)
+print(torch.add(tensor, 10))
 
 # Subtraction
 print(tensor - 10)
+print(torch.sub(tensor, 10))
 
 # Multiplication (element-wise)
 print(tensor * 10) # normal operations
@@ -25,6 +28,7 @@ print(torch.mul(tensor, 10)) # try out build-in functions
 
 # Division
 print(tensor / 10)
+print(torch.div(tensor, 10))
 
 
 # Two main ways of performing multiplication in neural networks and deep learning
@@ -80,7 +84,7 @@ print(torch.mm(tensor_A, tensor_B.T))   # (3, 2) @ (3, 2) will work with tensor.
 
 # To fix our tensor shape issues, we can manipulate the shape of one of our tensors using a transpose.
 # A transpose switches the axes or dimensions of a given tensor.
-# By use torch.transpose(input, dim0, dim1) or tensor.T
+# By use torch.transpose(input, dim0, dim1) or tensor.T //dim (dimension)
 
 print(tensor_B.shape)
 print(tensor_B.T.shape)
@@ -159,7 +163,62 @@ print(x_stracked, x_stracked.shape,"\n")
 x_stracked = torch.vstack([x, x], out=None)
 print(x_stracked, x_stracked.shape,"\n")
 
-#page 25 bye bye sleep well
+print(f"Previous tensor: {x_reshaped}")
+print(f"Previous shape: {x_reshaped.shape}")
+
+# Remove extra dimension from x_reshaped with squeeze
+x_squeezed = x_reshaped.squeeze()
+print(f"\nNew tensor: {x_squeezed}")
+print(f"New shape: {x_squeezed.shape}\n")
+
+print(f"Previous tensor: {x_squeezed}")
+print(f"Previous shape: {x_squeezed.shape}")
+
+## Add an extra dimension with unsqueeze
+x_unsqueezed = x_squeezed.unsqueeze(dim=0)
+print(f"\nNew tensor: {x_unsqueezed}")
+print(f"New shape: {x_unsqueezed.shape}\n")
+
+# torch.permuted is rearanges the dimensions of a target tensor in a specified order
+# Create tensor with specific shape // torch.permute(input, dims)
+x_original = torch.rand(size=(224, 224, 3))
+
+# Permute the original tensor to rearrange the axis order
+x_permuted = x_original.permute(2, 0, 1) # shifts axis 0->1, 1->2, 2->0
+
+print(f"Previous shape: {x_original.shape}")
+print(f"New shape: {x_permuted.shape}\n") # [colour_con]
+
+x_original[0, 0, 0] = 728218
+print(x_original[0, 0, 0], x_permuted[0, 0, 0])
+
+# the colon ":" is used as a shorthand for "all indices" or "all dimensions"
+print(x_original[0, 0, :])
+
+# Indexing (selecting data from tensors)
+x = torch.arange(1, 10).reshape(1, 3, 3)
+print(x, x.shape,"\n")
+
+# Let's index bracket by bracket
+print(f"First square bracket:\n{x[0]}") 
+print(f"Second square bracket: {x[0][0]}") 
+print(f"Third square bracket: {x[0][0][0]}\n")
 
 
+# Get all values of 0th dimension and the 0 index of 1st dimension
+print(x[:, 0])
 
+# Get all values of 0th & 1st dimensions but only index 1 of 2nd dimension
+print(x[:, :, 1])
+
+# Get all values of the 0 dimension but only the 1 index value of the 1st and 2nd dimension
+print(x[:, 1, 1])
+
+# Get index 0 of 0th and 1st dimension and all values of 2nd dimension 
+print(x[0, 0, :]) # same as x[0][0]
+
+#Exercises index
+# Index on x to return 9, [9]
+print(x[0, 2, 2], x[:, 2, 2])
+# Index on x to return [3, 6, 9] , [[3, 6, 9]]
+print(x[0, :, 2], x[:, :, 2])
