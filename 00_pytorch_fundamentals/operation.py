@@ -93,10 +93,9 @@ print("\n") # http://matrixmultiplication.xyz/
 print(f"Original shapes: tensor_A = {tensor_A.shape}, tensor_B = {tensor_B.shape}\n")
 print(f"New shapes: tensor_A = {tensor_A.shape} (same as above), tensor_B.T = {tensor_B.T.shape}\n")
 print(f"Multiplying: {tensor_A.shape} * {tensor_B.T.shape} <- inner dimensions match\n")
-print("Output:\n")
 output = torch.matmul(tensor_A, tensor_B.T)
-print(output) 
-print(f"\nOutput shape: {output.shape}")
+print(f"Output:\n{output}\n")
+print(f"Output shape: {output.shape}")
 
 # find min, max, mean, sum, etc (tensor aggregation)
 x = torch.arange(0, 100, 10) # x.dtype is long
