@@ -70,7 +70,6 @@ print(ten_zeros)
 
 #tensor datatypes more in link https://pytorch.org/docs/stable/tensors.html#data-types
 
-
 float_32_tensor = torch.tensor([3.5, 6.5, 9.5],
                                dtype=None, # defult is float 16
                                device=None, # 2 type are cpu, cuda >> cuda:0 //defult is cpu.
@@ -96,7 +95,6 @@ print(some_tensor)
 print(some_tensor.size(),some_tensor.shape) # does the same thing but one is function and the one is attribute
 
 # find out details about some tensor
-
 print(some_tensor)
 print(f"Datatype of tensor: {some_tensor.dtype}")
 print(f"Shape of tensor: {some_tensor.shape}")
