@@ -76,7 +76,6 @@ with torch.inference_mode():
 model_1.to(device)
 # print(next(model_1.parameters()).device)
 
-
 loss_fn = nn.L1Loss()
 optimizer = torch.optim.SGD(params=model_1.parameters(), lr=0.01)
 
@@ -121,3 +120,30 @@ print(f"weights: {weight}, bias: {bias}")
 
 loss_curves(epoch_count, train_loss_values, test_loss_values)
 plot_predictions(predictions=test_pred.cpu())
+
+MODEL_PATH = Path("models")
+MODEL_PATH.mkdir(parents=True, exist_ok=True)
+
+MODEL_NAME = "01_pytorch_workflow_model_1.pth"
+MODEL_SAVE_PATH = MODEL_PATH / MODEL_NAME
+
+print(f"Saving model to: {MODEL_SAVE_PATH}")
+torch.save(obj=model_1.state_dict(), f=MODEL_SAVE_PATH)
+
+# Check the saved file path
+print(f"Model file exists at: {os.path.abspath(MODEL_SAVE_PATH)}" if os.path.isfile(MODEL_SAVE_PATH) 
+      else f"Model file does not exist at: {os.path.abspath(MODEL_SAVE_PATH)}")
+
+loaded_model_1 = LinearRegressionModel()
+status = loaded_model_1.load_state_dict(torch.load(f=MODEL_SAVE_PATH))
+loaded_model_1.to(device)
+
+print(loaded_model_1, status)
+print(loaded_model_1.state_dict())
+
+loaded_model_1.eval()
+with torch.inference_mode():
+    loaded_model_preds = loaded_model_1(X_test)
+
+print(test_pred == loaded_model_preds)
+print(test_pred,"\n", loaded_model_preds)
