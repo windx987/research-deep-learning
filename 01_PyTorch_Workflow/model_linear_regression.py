@@ -1,9 +1,11 @@
-
 import torch
 from torch import nn # nn is building blocks for neural networks
 import matplotlib.pyplot as plt
 from pathlib import Path
 import os
+
+device = "cuda" if torch.cuda.is_available() else "cpu"
+print(f"Using device: {device}")
 
 weight = 0.7
 bias = 0.3

@@ -26,6 +26,8 @@ bias = 0.3
 start = 0
 end = 1
 step = 0.02
+
+# without unsqueeze, errors will happen later (issue with extra dimension)
 X = torch.arange(start, end, step).unsqueeze(dim=1)
 y = weight * X + bias
 
