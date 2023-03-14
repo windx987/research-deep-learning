@@ -139,7 +139,7 @@ optimizer = torch.optim.SGD(params=model_0.parameters(), # parameters of target 
 ## training loop
 
 # An epoch is one loop through the data...
-epochs =  1
+epochs =  100
 
     # 0. Loop through the data
 for epochs in range(epochs):
@@ -151,7 +151,8 @@ for epochs in range(epochs):
     y_pred = model_0(X_train) # Pass the data through the model
 
     # 2. Calculate the loss
-    loss = loss_fn(y_pred) # Calculate the loss value
+    loss = loss_fn(y_pred, y_train)  # Calculate the loss value
+    print(f"Loss: {loss}")
 
     # 3. Zero the optimizer gradients
     optimizer.zero_grad()  
@@ -162,13 +163,14 @@ for epochs in range(epochs):
     # 5. Step the optimizer (perform gradient descent)
     optimizer.step()
 
-
-
-
-
-
-
-
-
-
+    ## testing loop
     model_0.eval() # turns off gradient tracking
+    
+    #print out model status_dict()
+    print(model_0.state_dict())
+
+with torch.inference_mode():
+    y_preds_new = model_0(X_test)
+
+plot_predictions(predictions=y_preds)
+plot_predictions(predictions=y_preds_new)
