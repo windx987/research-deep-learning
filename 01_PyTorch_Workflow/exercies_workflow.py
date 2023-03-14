@@ -9,8 +9,8 @@ import os
 device = "cuda" if torch.cuda.is_available() else "cpu"
 print(f"Using device: {device}")
 
-result = subprocess.run(['nvidia-smi'], stdout=subprocess.PIPE)
-print(result.stdout.decode('utf-8'))
+# result = subprocess.run(['nvidia-smi'], stdout=subprocess.PIPE)
+# print(result.stdout.decode('utf-8'))
 
 # Data for training
 # linear regression formula (y = weight * X + bias)
@@ -44,23 +44,80 @@ def plot_predictions(train_data=X_train, train_labels=y_train, test_data=X_test,
     plt.legend(prop={"size": 14});
     plt.show()
 
-# print(len(X_train), len(y_train), len(X_test), len(y_test))
-# plot_predictions(X_train, y_train, X_test, y_test)
+def loss_curves(epochs_count, trains_loss_values, tests_loss_values):
+    # Plot the loss curves
+    plt.plot(epochs_count, trains_loss_values, label="Train loss")
+    plt.plot(epochs_count, tests_loss_values, label="Test loss")
+    plt.title("Training and test loss curves")
+    plt.ylabel("Loss")
+    plt.xlabel("Epochs")
+    plt.legend(prop={"size": 14})
+    plt.show()
 
-class LinearRegressionModel(nn.Module): 
+class LinearRegressionModel(nn.Module): # use nn.Linear 
     def __init__(self):
-        super().__init__() 
-        self.weights = nn.Parameter(torch.randn(1, dtype=torch.float), requires_grad=True) 
-        self.bias = nn.Parameter(torch.randn(1, dtype=torch.float), requires_grad=True) 
+        super().__init__()
+        self.linear_layer = torch.nn.Linear(in_features=1, out_features=1)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor: 
-        return self.weights * x + self.bias
+        return self.linear_layer(x)
 
 torch.manual_seed(42)
 
-model_0 = LinearRegressionModel()
+model_1 = LinearRegressionModel()
 
 with torch.inference_mode():
-    y_preds = model_0(X_test)
+    y_preds = model_1(X_test)
+
+# Check the model current device
+# print(next(model_1.parameters()).device)
+
+# Set the model to use target device
+model_1.to(device)
+# print(next(model_1.parameters()).device)
 
 
+loss_fn = nn.L1Loss()
+optimizer = torch.optim.SGD(params=model_1.parameters(), lr=0.01)
+
+epochs =  200
+
+epoch_count         = []
+train_loss_values   = []
+test_loss_values    = []
+
+# Put data on the available device
+X_train, X_test, y_train, y_test = map(lambda x: x.to(device), (X_train, X_test, y_train, y_test))
+
+for epoch in range(epochs):
+
+## training
+    model_1.train() 
+    y_pred = model_1(X_train)
+    loss = loss_fn(y_pred, y_train)
+    optimizer.zero_grad()
+    loss.backward()
+    optimizer.step()
+    
+## testing
+    model_1.eval()
+    with torch.inference_mode():
+        test_pred = model_1(X_test)
+        test_loss = loss_fn(test_pred, y_test)
+
+        if epoch % 10 == 0:
+            print(f"Epoch: {epoch} | Train loss: {loss} | Test loss: {test_loss}")
+
+            epoch_count.append(epoch)
+            train_loss_values.append(loss.cpu().detach().numpy())
+            test_loss_values.append(test_loss.cpu().detach().numpy())
+
+# Find our model's learned parameters
+from pprint import pprint # pprint = pretty print, see: https://docs.python.org/3/library/pprint.html 
+print("\nThe model learned the following values for weights and bias:")
+pprint(model_1.state_dict())
+print("\nAnd the original values for weights and bias are:")
+print(f"weights: {weight}, bias: {bias}")
+
+loss_curves(epoch_count, train_loss_values, test_loss_values)
+plot_predictions(predictions=test_pred.cpu())
