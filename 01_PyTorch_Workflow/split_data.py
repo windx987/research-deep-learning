@@ -134,16 +134,13 @@ loss_fn = nn.L1Loss() # MAE loss is same as L1Loss // Mean Absolute Error loss
 optimizer = torch.optim.SGD(params=model_0.parameters(), # parameters of target model to optimize
                             lr=0.01) # learning rate (how much the optimizer should change parameters at each step, higher=more (less stable), lower=less (might take a long time))
 
-## Creating an optimization loop in PyTorch
-
-## training loop
-
 # An epoch is one loop through the data...
-epochs =  100
+epochs =  180
 
     # 0. Loop through the data
-for epochs in range(epochs):
+for epoch in range(epochs):
 
+    ### Training loop
     # Set the model to training moade
     model_0.train() # train mode in pytorch, sets all parameters that require gradients to require gradients
     
@@ -152,7 +149,6 @@ for epochs in range(epochs):
 
     # 2. Calculate the loss
     loss = loss_fn(y_pred, y_train)  # Calculate the loss value
-    print(f"Loss: {loss}")
 
     # 3. Zero the optimizer gradients
     optimizer.zero_grad()  
@@ -163,11 +159,23 @@ for epochs in range(epochs):
     # 5. Step the optimizer (perform gradient descent)
     optimizer.step()
 
-    ## testing loop
-    model_0.eval() # turns off gradient tracking
-    
-    #print out model status_dict()
-    print(model_0.state_dict())
+    ### Testing loop
+    model_0.eval() # Put the model in evaluation mode
+    with torch.inference_mode(): # turn off gradients tracking & couple more things behind the scenes
+        
+        # 1. Forward pass 
+        test_pred = model_0(X_test) # Calculate the loss value
+        
+        # 2. Caculate loss on test data
+        test_loss = loss_fn(test_pred, y_test)
+
+        if epoch % 10 == 0:
+
+            # Print out what's happening
+            print(f"Epoch: {epoch} | MAE Train Loss: {loss} | MAE Test Loss: {test_loss} ")
+
+            #print out model status_dict()
+            print(model_0.state_dict())
 
 with torch.inference_mode():
     y_preds_new = model_0(X_test)

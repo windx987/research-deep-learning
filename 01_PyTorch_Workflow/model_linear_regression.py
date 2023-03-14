@@ -46,10 +46,7 @@ class LinearRegressionModel(nn.Module):
     def forward(self, x: torch.Tensor) -> torch.Tensor: 
         return self.weights * x + self.bias
 
-torch.manual_seed(42)
-
 model_0 = LinearRegressionModel()
-
 
 # Create the loss function
 loss_fn = nn.L1Loss()
@@ -57,8 +54,10 @@ loss_fn = nn.L1Loss()
 # Create the optimizer
 optimizer = torch.optim.SGD(params=model_0.parameters(), lr=0.01)
 
+torch.manual_seed(42)
+
 # An epoch is one loop through the data...
-epochs =  1
+epochs =  100
 
 ## training loop
 
