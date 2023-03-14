@@ -11,6 +11,12 @@ import torch
 from torch import nn # nn contains all of PyTorch's building blocks for neural networks
 import matplotlib.pyplot as plt
 
+# Machine learning is a game of two parts :
+    # Get data into a nurical representation.
+    # Build a model to learn patterns in that numerical representation.
+
+## 1. Data < preparing and loading >
+
 # Create *known* parameters
 weight = 0.7
 bias = 0.3
@@ -24,6 +30,9 @@ y = weight * X + bias
 
 X[:10], y[:10]
 
+## Split data into training and test sets 
+# (one of the most important concepts in machine learning in general)
+
 # Create train/test split
 train_split = int(0.8 * len(X)) # 80% of data used for training set, 20% for testing 
 X_train, y_train = X[:train_split], y[:train_split]
@@ -31,6 +40,7 @@ X_test, y_test = X[train_split:], y[train_split:]
 
 print(len(X_train), len(y_train), len(X_test), len(y_test))
 
+# How might we better visualize our data? answer is plot data with matplotlib
 def plot_predictions(train_data=X_train, 
                      train_labels=y_train, 
                      test_data=X_test, 
@@ -57,3 +67,20 @@ def plot_predictions(train_data=X_train,
 
 plot_predictions()
 
+## 2. Build model < Our first PyTorch model >
+
+# Create a Linear Regression model class
+class LinearRegressionModel(nn.modules):  # <- almost everything in PyTorch is a nn.Module (think of this as neural network lego blocks)
+    def __init__(self): # method
+        super().__init__()
+        self.weights = nn.Parameter(torch.randn(1,
+                                                requires_grad = True,
+                                                dtype = torch.float))
+        self.bias = nn.Parameter(torch.randn(1,
+                                            requires_grad = True,
+                                            dtype = torch.float))
+        
+    # Forward defines the computation in the model
+    def forward(self, x: torch.Tensor) -> torch.Tensor: # <- "x" is the input data (e.g. training/testing features)
+        return self.weights * x + self.bias # <- this is the linear regression formula (y = m*x + b)
+    
