@@ -3,6 +3,7 @@ import torch
 from torch import nn # nn is building blocks for neural networks
 import matplotlib.pyplot as plt
 from pathlib import Path
+import os
 
 weight = 0.7
 bias = 0.3
@@ -99,7 +100,7 @@ for epoch in range(epochs):
             # print(f"Epoch: {epoch} | MAE Train Loss: {loss} | MAE Test Loss: {test_loss} ")
             # print(model_0.state_dict(),"\n")
 
-if True:
+if True == False:
     # Plot the loss curves
     plt.plot(epoch_count, train_loss_values, label="Train loss")
     plt.plot(epoch_count, test_loss_values, label="Test loss")
@@ -121,3 +122,26 @@ with torch.inference_mode():
 # plot_predictions(predictions=y_preds)
 # plot_predictions(predictions=y_preds_new)
 
+MODEL_PATH = Path("models")
+MODEL_PATH.mkdir(parents=True, exist_ok=True)
+
+MODEL_NAME = "01_pytorch_workflow_model_0.pth"
+MODEL_SAVE_PATH = MODEL_PATH / MODEL_NAME
+
+print(f"Saving model to: {MODEL_SAVE_PATH}")
+torch.save(obj=model_0.state_dict(), f=MODEL_SAVE_PATH) 
+
+# Check the saved file path with os
+file_path = 'models/01_pytorch_workflow_model_0.pth'
+print(f"Model file exists at: {os.path.abspath(file_path)}" if os.path.isfile(file_path) 
+      else f"Model file does not exist at: {os.path.abspath(file_path)}")
+
+loaded_model_0 = LinearRegressionModel()
+status = loaded_model_0.load_state_dict(torch.load(f=MODEL_SAVE_PATH))
+print(status)
+
+loaded_model_0.eval()
+with torch.inference_mode():
+    loaded_model_preds = loaded_model_0(X_test)
+
+print(y_preds_new == loaded_model_preds)

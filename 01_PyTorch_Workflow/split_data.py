@@ -210,7 +210,7 @@ with torch.inference_mode():
 # plot_predictions(predictions=y_preds)
 # plot_predictions(predictions=y_preds_new)
 
-# Loading a saved PyTorch model's state_dict()
+# Saving a PyTorch model's state_dict()
 
 # 1. Create models directory 
 MODEL_PATH = Path("models")
@@ -223,5 +223,33 @@ MODEL_SAVE_PATH = MODEL_PATH / MODEL_NAME
 
 # 3. Save the model state dict 
 print(f"Saving model to: {MODEL_SAVE_PATH}")
-torch.save(obj=model_0.state_dict(), f=MODEL_SAVE_PATH) # saves only the models learned parameters
+# saves only the models learned parameters
+# torch.save(obj=model_0.state_dict(), f=MODEL_SAVE_PATH) 
 
+# Check the saved file path
+import os
+
+file_path = 'models/01_pytorch_workflow_model_1.pth'
+
+print(f"Model file exists at: {os.path.abspath(file_path)}" if os.path.isfile(file_path) 
+      else f"Model file does not exist at: {os.path.abspath(file_path)}")
+
+# Loading a saved PyTorch model's state_dict()
+
+# Instantiate a new instance of our model (this will be instantiated with random weights)
+loaded_model_0 = LinearRegressionModel()
+
+# Load the state_dict of our saved model (this will update the new instance of our model with trained weights)
+loaded_model_0.load_state_dict(torch.load(f=MODEL_SAVE_PATH))
+
+loaded_model_0 = LinearRegressionModel()
+status = loaded_model_0.load_state_dict(torch.load(f=MODEL_SAVE_PATH))
+print(status)
+
+# Make some models preds
+loaded_model_0.eval()
+with torch.inference_mode():
+    loaded_model_preds = loaded_model_0(X_test)
+
+# Compare previous model predictions with loaded model predictions (these should be the same)
+print(y_preds_new == loaded_model_preds)
