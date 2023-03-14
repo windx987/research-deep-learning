@@ -10,6 +10,7 @@ what_were_covering = {  1: "data (prepare and load)",
 import torch
 from torch import nn # nn contains all of PyTorch's building blocks for neural networks
 import matplotlib.pyplot as plt
+from pathlib import Path
 
 # Machine learning is a game of two parts :
     # Get data into a nurical representation.

@@ -2,6 +2,7 @@
 import torch
 from torch import nn # nn is building blocks for neural networks
 import matplotlib.pyplot as plt
+from pathlib import Path
 
 weight = 0.7
 bias = 0.3
@@ -39,7 +40,6 @@ def plot_predictions(train_data=X_train,
     plt.legend(prop={"size": 14});
     plt.show()
 
-# moodel_0
 class LinearRegressionModel(nn.Module): 
     def __init__(self):
         super().__init__() 
@@ -49,9 +49,9 @@ class LinearRegressionModel(nn.Module):
     def forward(self, x: torch.Tensor) -> torch.Tensor: 
         return self.weights * x + self.bias
 
-model_0 = LinearRegressionModel()
-
 torch.manual_seed(42)
+
+model_0 = LinearRegressionModel()
 
 with torch.inference_mode():
     y_preds = model_0(X_test)
@@ -96,8 +96,8 @@ for epoch in range(epochs):
             train_loss_values.append(loss.detach().numpy())
             test_loss_values.append(test_loss.detach().numpy())
 
-            print(f"Epoch: {epoch} | MAE Train Loss: {loss} | MAE Test Loss: {test_loss} ")
-            print(model_0.state_dict(),"\n")
+            # print(f"Epoch: {epoch} | MAE Train Loss: {loss} | MAE Test Loss: {test_loss} ")
+            # print(model_0.state_dict(),"\n")
 
 if True:
     # Plot the loss curves
@@ -118,7 +118,6 @@ print(f"weights: {weight}, bias: {bias}")
 with torch.inference_mode():
     y_preds_new = model_0(X_test)
 
-plot_predictions(predictions=y_preds)
-plot_predictions(predictions=y_preds_new)
+# plot_predictions(predictions=y_preds)
+# plot_predictions(predictions=y_preds_new)
 
-# Loading a saved PyTorch model's state_dict()
