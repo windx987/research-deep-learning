@@ -188,7 +188,7 @@ for epoch in range(epochs):
             #print out model status_dict()
             print(model_0.state_dict())
 
-if True:
+if True == False:
     # Plot the loss curves
     plt.plot(epoch_count, train_loss_values, label="Train loss")
     plt.plot(epoch_count, test_loss_values, label="Test loss")
@@ -207,7 +207,20 @@ print(f"weights: {weight}, bias: {bias}")
 with torch.inference_mode():
     y_preds_new = model_0(X_test)
 
-plot_predictions(predictions=y_preds)
-plot_predictions(predictions=y_preds_new)
+# plot_predictions(predictions=y_preds)
+# plot_predictions(predictions=y_preds_new)
 
 # Loading a saved PyTorch model's state_dict()
+
+# 1. Create models directory 
+MODEL_PATH = Path("models")
+MODEL_PATH.mkdir(parents=True, exist_ok=True)
+
+# 2. Create model save path 
+MODEL_NAME = "01_pytorch_workflow_model_0.pth"
+MODEL_SAVE_PATH = MODEL_PATH / MODEL_NAME
+
+
+# 3. Save the model state dict 
+print(f"Saving model to: {MODEL_SAVE_PATH}")
+torch.save(obj=model_0.state_dict(), f=MODEL_SAVE_PATH) # saves only the models learned parameters
