@@ -1,4 +1,4 @@
-# sources Learn PyTorch for deep learning 
+# Learn PyTorch for deep learning (sources)
 
 https://youtube.com/watch?v=V_xro1bcAuA 
 
