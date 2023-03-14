@@ -31,8 +31,6 @@ print(torch.__version__)
     # Get data into a nurical representation.
     # Build a model to learn patterns in that numerical representation.
 
-
-
 # To showcase this, let's create some *known* data using the linear regression formula.
 # We'll use a linear regression formula to make a straight line with known "parameters".
 
@@ -47,7 +45,7 @@ step = 0.02
 X = torch.arange(start, end, step).unsqueeze(dim=1)
 y = weight * X + bias
 
-print(X[:10], y[:10],"\n",len(X), len(y))
+X[:10], y[:10]
 
 ## Split data into training and test sets (one of the most important concepts in machine learning in general)
 # Let's create a training and test set with our data.
@@ -56,8 +54,6 @@ print(X[:10], y[:10],"\n",len(X), len(y))
 train_split = int(0.8 * len(X)) # 80% of data used for training set, 20% for testing 
 X_train, y_train = X[:train_split], y[:train_split]
 X_test, y_test = X[train_split:], y[train_split:]
-
-len(X_train), len(y_train), len(X_test), len(y_test)
 
 print(len(X_train), len(y_train), len(X_test), len(y_test))
 
@@ -82,8 +78,6 @@ def plot_predictions(   train_data = X_train,
     # Plot test data in green
     plt.scatter(test_data, test_labels, c="g", s=4, label="Testing data")
     
-
-
     # Are there predictions?
     if predictions is not None:
         #Plot the predictions if they exist
@@ -96,3 +90,23 @@ def plot_predictions(   train_data = X_train,
 plot_predictions()
 
 ## 2. Build model < Our first PyTorch model >
+
+# Create a Linear Regression model class
+class LinearRegressionModel(nn.modules):  # <- almost everything in PyTorch is a nn.Module (think of this as neural network lego blocks)
+    def __init__(self):
+        super().__init__()
+        self.weights = nn.Parameter(torch.randn(1,
+                                                requires_grad = True,
+                                                dtype = torch.float))
+        self.bias = nn.Parameter(torch.randn(1,
+                                            requires_grad = True,
+                                            dtype = torch.float))
+        
+    # Forward defines the computation in the model
+    def forward(self, x: torch.Tensor) -> torch.Tensor: # <- "x" is the input data (e.g. training/testing features)
+        return self.weights * x + self.bias # <- this is the linear regression formula (y = m*x + b)
+
+# What our model does:
+# • Start with random values (weight & bias)
+# • Look at training data and adjust the random values to better represent 
+# (or get closer to) the ideal values (the weight & bias values we used to create the data)
