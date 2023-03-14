@@ -65,22 +65,61 @@ def plot_predictions(train_data=X_train,
     plt.legend(prop={"size": 14});
     plt.show()
 
-plot_predictions()
+# plot_predictions() #run functions plot 
 
 ## 2. Build model < Our first PyTorch model >
 
 # Create a Linear Regression model class
-class LinearRegressionModel(nn.modules):  # <- almost everything in PyTorch is a nn.Module (think of this as neural network lego blocks)
-    def __init__(self): # method
-        super().__init__()
-        self.weights = nn.Parameter(torch.randn(1,
-                                                requires_grad = True,
-                                                dtype = torch.float))
-        self.bias = nn.Parameter(torch.randn(1,
-                                            requires_grad = True,
-                                            dtype = torch.float))
-        
+class LinearRegressionModel(nn.Module): # <- almost everything in PyTorch is a nn.Module (think of this as neural network lego blocks)
+    def __init__(self):
+        super().__init__() 
+        self.weights = nn.Parameter(torch.randn(1, # <- start with random weights (this will get adjusted as the model learns)
+                                                dtype=torch.float), # <- PyTorch loves float32 by default
+                                   requires_grad=True) # <- can we update this value with gradient descent?)
+
+        self.bias = nn.Parameter(torch.randn(1, # <- start with random bias (this will get adjusted as the model learns)
+                                            dtype=torch.float), # <- PyTorch loves float32 by default
+                                requires_grad=True) # <- can we update this value with gradient descent?))
+
     # Forward defines the computation in the model
     def forward(self, x: torch.Tensor) -> torch.Tensor: # <- "x" is the input data (e.g. training/testing features)
         return self.weights * x + self.bias # <- this is the linear regression formula (y = m*x + b)
     
+# Checking the contents of a PyTorch model
+
+#create random seed for tracking our model 
+torch.manual_seed(42) # (weight & bias won't change all the time)  // why is 42. //ask google! 
+
+#create an instance of the model 
+model_0 = LinearRegressionModel() # subclass of nn.Module that contains nn.Parameter(s)
+
+# Check the nn.Parameter(s) within the nn.Module subclass we created
+print(list(model_0.parameters()))
+
+# We can also get the state (what the model contains) of the model using .state_dict()
+
+# List named parameters 
+print(model_0.state_dict())
+
+# Making predictions using torch.inference_mode()
+# torch.no_grad() do similar things but slower
+
+# Make predictions with model
+with torch.inference_mode(): 
+    y_preds = model_0(X_test)
+
+# Check the predictions
+print(f"Number of testing samples: {len(X_test)}") 
+print(f"Number of predictions made: {len(y_preds)}")
+print(f"Predicted values:\n{y_preds}")
+
+#run functions plot with predictions
+plot_predictions(predictions=y_preds)
+
+## 3. Train model 
+
+# Right now our model is making predictions using random parameters to make calculations, it's basically guessing (randomly).
+
+# One way to measure how wrong your models predictions are is to use a loss function.
+# Loss function: A function to measure how wrong your model's predictions are to the ideal outputs, lower is better.
+
