@@ -254,3 +254,6 @@ with torch.inference_mode():
 
 # Compare previous model predictions with loaded model predictions (these should be the same)
 print(y_preds_new == loaded_model_preds)
+
+
+# page 54 sleep well bro!
