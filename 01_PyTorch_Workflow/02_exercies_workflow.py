@@ -67,14 +67,13 @@ torch.manual_seed(42)
 model_1 = LinearRegressionModel()
 
 with torch.inference_mode():
-    y_preds = model_1(X_test)
+    y_pred = model_1(X_test)
 
-# Check the model current device
-# print(next(model_1.parameters()).device)
+plot_predictions(predictions=y_pred.cpu())
 
 # Set the model to use target device
 model_1.to(device)
-# print(next(model_1.parameters()).device)
+print(next(model_1.parameters()).device)
 
 loss_fn = nn.L1Loss()
 optimizer = torch.optim.SGD(params=model_1.parameters(), lr=0.01)
@@ -92,8 +91,8 @@ for epoch in range(epochs):
 
 ## training
     model_1.train() 
-    y_pred = model_1(X_train)
-    loss = loss_fn(y_pred, y_train)
+    y_preds = model_1(X_train)
+    loss = loss_fn(y_preds, y_train)
     optimizer.zero_grad()
     loss.backward()
     optimizer.step()
