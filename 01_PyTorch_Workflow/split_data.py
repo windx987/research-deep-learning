@@ -244,8 +244,6 @@ loaded_model_0 = LinearRegressionModel()
 
 # Load the state_dict of our saved model (this will update the new instance of our model with trained weights)
 loaded_model_0.load_state_dict(torch.load(f=MODEL_SAVE_PATH))
-
-loaded_model_0 = LinearRegressionModel()
 status = loaded_model_0.load_state_dict(torch.load(f=MODEL_SAVE_PATH))
 print(status)
 
