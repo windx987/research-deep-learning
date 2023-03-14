@@ -1,6 +1,4 @@
-# sources
-
-Learn PyTorch for deep learning in this comprehensive course for beginners. PyTorch is a machine learning framework written in Python.
+# sources Learn PyTorch for deep learning 
 
 https://youtube.com/watch?v=V_xro1bcAuA 
 
