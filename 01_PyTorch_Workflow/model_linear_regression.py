@@ -13,12 +13,14 @@ step = 0.02
 X = torch.arange(start, end, step).unsqueeze(dim=1)
 y = weight * X + bias
 
+X[:10], y[:10]
+
 # Create train/test split
 train_split = int(0.8 * len(X)) # 80% of data used for training set, 20% for testing 
 X_train, y_train = X[:train_split], y[:train_split]
 X_test,  y_test  = X[train_split:], y[train_split:]
 
-# moodel_0
+# plot graph
 def plot_predictions(train_data=X_train, 
                      train_labels=y_train, 
                      test_data=X_test, 
@@ -37,6 +39,7 @@ def plot_predictions(train_data=X_train,
     plt.legend(prop={"size": 14});
     plt.show()
 
+# moodel_0
 class LinearRegressionModel(nn.Module): 
     def __init__(self):
         super().__init__() 
@@ -48,39 +51,74 @@ class LinearRegressionModel(nn.Module):
 
 model_0 = LinearRegressionModel()
 
-# Create the loss function
-loss_fn = nn.L1Loss()
-
-# Create the optimizer
-optimizer = torch.optim.SGD(params=model_0.parameters(), lr=0.01)
-
 torch.manual_seed(42)
 
-# An epoch is one loop through the data...
-epochs =  100
+with torch.inference_mode():
+    y_preds = model_0(X_test)
 
-## training loop
+loss_fn = nn.L1Loss()
+optimizer = torch.optim.SGD(params=model_0.parameters(), lr=0.01)
 
-for epochs in range(epochs):
+epoch_count         = []
+train_loss_values   = []
+test_loss_values    = []
 
-    # Set the model to training mode
-    model_0.train() # start tracking gradient 
+epochs =  300
 
-    # 1. Forward pass 
+### training loop
+
+for epoch in range(epochs):
+
+    model_0.train() 
+
     y_pred = model_0(X_train)
 
-    # 2. Calculate the loss
     loss = loss_fn(y_pred, y_train)
 
-    # 3. Zero the optimizer gradients
     optimizer.zero_grad()
 
-    # 4. Perform backprogpagation 
     loss.backward()
 
-    # 5. Step the optimizer 
     optimizer.step()
 
-    model_0.eval() # turns off gradient tracking
+### Testing loop
 
-    print(model_0.state_dict())
+    model_0.eval() 
+
+    with torch.inference_mode(): 
+
+        test_pred = model_0(X_test) 
+        
+        test_loss = loss_fn(test_pred, y_test)
+
+        if epoch % 10 == 0:
+            epoch_count.append(epoch)
+            train_loss_values.append(loss.detach().numpy())
+            test_loss_values.append(test_loss.detach().numpy())
+
+            print(f"Epoch: {epoch} | MAE Train Loss: {loss} | MAE Test Loss: {test_loss} ")
+            print(model_0.state_dict(),"\n")
+
+if True:
+    # Plot the loss curves
+    plt.plot(epoch_count, train_loss_values, label="Train loss")
+    plt.plot(epoch_count, test_loss_values, label="Test loss")
+    plt.title("Training and test loss curves")
+    plt.ylabel("Loss")
+    plt.xlabel("Epochs")
+    plt.legend(prop={"size": 14})
+    plt.show()           
+
+# Find our model's learned parameters
+print("The model learned the following values for weights and bias:")
+print(model_0.state_dict())
+print("\nAnd the original values for weights and bias are:")
+print(f"weights: {weight}, bias: {bias}")
+
+with torch.inference_mode():
+    y_preds_new = model_0(X_test)
+
+plot_predictions(predictions=y_preds)
+plot_predictions(predictions=y_preds_new)
+
+# Loading a saved PyTorch model's state_dict()

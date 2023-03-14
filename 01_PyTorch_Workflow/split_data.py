@@ -209,3 +209,4 @@ with torch.inference_mode():
 plot_predictions(predictions=y_preds)
 plot_predictions(predictions=y_preds_new)
 
+# Loading a saved PyTorch model's state_dict()
