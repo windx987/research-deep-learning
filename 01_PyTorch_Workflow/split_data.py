@@ -42,8 +42,6 @@ train_split = int(0.8 * len(X)) # 80% of data used for training set, 20% for tes
 X_train, y_train = X[:train_split], y[:train_split]
 X_test, y_test = X[train_split:], y[train_split:]
 
-print(len(X_train), len(y_train), len(X_test), len(y_test))
-
 # How might we better visualize our data? answer is plot data with matplotlib
 def plot_predictions(train_data=X_train, 
                      train_labels=y_train, 
@@ -70,6 +68,9 @@ def plot_predictions(train_data=X_train,
     plt.show()
 
 # plot_predictions() #run functions plot 
+
+print(len(X_train), len(y_train), len(X_test), len(y_test))
+plot_predictions(X_train, y_train, X_test, y_test)
 
 ## 2. Build model < Our first PyTorch model >
 
@@ -159,7 +160,7 @@ for epoch in range(epochs):
     # 2. Calculate the loss
     loss = loss_fn(y_pred, y_train)  # Calculate the loss value
 
-    # 3. Zero the optimizer gradients
+    # 3. Zero the optimizer gradients // mean set zero to optimizer
     optimizer.zero_grad() 
 
     # 4. Perform backprogpagation on the loss with respect to the parameters of the model
