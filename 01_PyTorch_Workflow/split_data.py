@@ -114,12 +114,35 @@ print(f"Number of predictions made: {len(y_preds)}")
 print(f"Predicted values:\n{y_preds}")
 
 #run functions plot with predictions
-plot_predictions(predictions=y_preds)
+# plot_predictions(predictions=y_preds)
 
 ## 3. Train model 
 
 # Right now our model is making predictions using random parameters to make calculations, it's basically guessing (randomly).
 
-# One way to measure how wrong your models predictions are is to use a loss function.
-# Loss function: A function to measure how wrong your model's predictions are to the ideal outputs, lower is better.
+## One way to measure how wrong your models predictions are is to use a loss function than optimize it.
+# • Loss function: A function to measure how wrong your model's predictions are to the ideal outputs, lower is better.
+# • Optimizer: Takes into account the loss of a model and adjusts the model's parameters (e.g. weight & bias)
 
+# And specifically for PyTorch, we need: • A training loop  • A testing loop
+
+
+# Create the loss function
+loss_fn = nn.L1Loss() # MAE loss is same as L1Loss // Mean Absolute Error loss
+
+# Create the optimizer
+optimizer = torch.optim.SGD(params=model_0.parameters(), # parameters of target model to optimize
+                            lr=0.01) # learning rate (how much the optimizer should change parameters at each step, higher=more (less stable), lower=less (might take a long time))
+
+## Creating an optimization loop in PyTorch
+
+# An epoch is one loop through the data...
+epochs =  1
+
+# 0. Loop through the data
+for epochs in range(epochs):
+
+    # Set the model to training mode
+    model_0.train() #train mode in pytorch sets all parameters that require gradients to require gradients
+    
+    #
