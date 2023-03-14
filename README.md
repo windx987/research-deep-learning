@@ -1,13 +1,15 @@
-# pytorch-deep-learning
+# sources
 
 Learn PyTorch for deep learning in this comprehensive course for beginners. PyTorch is a machine learning framework written in Python.
 
-🔗 Youtube: https://youtube.com/watch?v=V_xro1bcAuA & https://www.youtube.com/@3blue1brown
+https://youtube.com/watch?v=V_xro1bcAuA 
 
-🔗 Code: https://github.com/mrdbourke/pytorch-deep-learning
+https://www.youtube.com/@3blue1brown
 
-🔗 Ask a question: https://github.com/mrdbourke/pytorch-deep-learning/discussions
+https://github.com/mrdbourke/pytorch-deep-learning
 
-🔗 Course materials online: https://learnpytorch.io
+https://github.com/mrdbourke/pytorch-deep-learning/discussions
 
-🔗 Full course on Zero to Mastery (20+ hours more video): https://dbourke.link/ZTMPyTorch
+https://learnpytorch.io
+
+https://dbourke.link/ZTMPyTorch
