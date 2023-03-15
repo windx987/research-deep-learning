@@ -70,7 +70,6 @@ plot_predictions(predictions=y_pred.cpu())
 
 # Set the model to use target device
 model_1.to(device)
-print(next(model_1.parameters()).device)
 
 loss_fn = nn.L1Loss()
 optimizer = torch.optim.SGD(params=model_1.parameters(), lr=0.01)
