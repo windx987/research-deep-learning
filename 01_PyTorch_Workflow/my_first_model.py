@@ -9,9 +9,6 @@ import os
 device = "cuda" if torch.cuda.is_available() else "cpu"
 print(f"Using device: {device}")
 
-# result = subprocess.run(['nvidia-smi'], stdout=subprocess.PIPE)
-# print(result.stdout.decode('utf-8'))
-
 # Data for training
 # linear regression formula (y = weight * X + bias)
 
