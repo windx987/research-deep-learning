@@ -15,8 +15,8 @@ print(f"Using device: {device}")
 # Data for training
 # linear regression formula (y = weight * X + bias)
 
-weight = 0.7
-bias = 0.3
+weight = 0.3
+bias = 0.9
 
 start = 0
 end = 1
@@ -25,7 +25,7 @@ step = 0.02
 X = torch.arange(start, end, step).unsqueeze(dim=1)
 y = weight * X + bias
 
-X[:10], y[:10]
+# X[:10], y[:10]
 
 # Create train/test split
 train_split = int(0.8 * len(X)) # 80% of data used for training set, 20% for testing set 
@@ -78,7 +78,7 @@ print(next(model_1.parameters()).device)
 loss_fn = nn.L1Loss()
 optimizer = torch.optim.SGD(params=model_1.parameters(), lr=0.01)
 
-epochs =  200
+epochs =  300
 
 epoch_count         = []
 train_loss_values   = []
@@ -103,7 +103,7 @@ for epoch in range(epochs):
         test_pred = model_1(X_test)
         test_loss = loss_fn(test_pred, y_test)
 
-        if epoch % 10 == 0:
+        if epoch % 20 == 0:
             print(f"Epoch: {epoch} | Train loss: {loss} | Test loss: {test_loss}")
 
             epoch_count.append(epoch)
@@ -145,4 +145,4 @@ with torch.inference_mode():
     loaded_model_preds = loaded_model_1(X_test)
 
 print(test_pred == loaded_model_preds)
-print(test_pred,"\n", loaded_model_preds)
+# print(test_pred,"\n", loaded_model_preds)
