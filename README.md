@@ -22,4 +22,4 @@ Machine learning is a collaborative field, and it's important to engage with oth
 
 In conclusion, learning machine learning can be a challenging but rewarding journey. By starting with the basics, practicing on real-world datasets, learning from your mistakes, staying up-to-date with the latest developments, and collaborating with others, you can build a strong foundation in machine learning and make meaningful contributions to the field. So, don't be afraid to embrace the challenges and opportunities that come with learning machine learning.
 
-![Alt text](image.png)
+![Alt text](/models/image.png)
