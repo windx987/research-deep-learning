@@ -82,4 +82,3 @@ class CircleModelV0(nn.Module):
 model_0 = CircleModelV0().to(device)
 print(model_0)
 
-#test 101
