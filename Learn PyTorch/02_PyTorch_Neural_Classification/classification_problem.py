@@ -25,9 +25,10 @@ print(circles.head(10),"\n")
 # Check different labels
 # print(circles.label.value_counts())
 
+import matplotlib.pyplot as plt
 plt.scatter(x=X[:, 0],
             y=X[:, 1],
-            c=y, 
+            c=y,
             cmap=plt.cm.RdYlBu);
 # plt.show()
 
@@ -77,8 +78,35 @@ class CircleModelV0(nn.Module):
   # 3. Define a forward() method that outlines the forward pass
   def forward(self, x):
     return self.layer_2(self.layer_1(x)) # x -> layer_1 ->  layer_2 -> output
-
+    
 # 4. Instantiate an instance of our model class and send it to the target device
 model_0 = CircleModelV0().to(device)
 print(model_0)
 
+next(model_0.parameters()).device
+
+# Let's replicate the model above using nn.Sequential()
+model_0 = nn.Sequential(
+    nn.Linear(in_features=2, out_features=5),
+    nn.Linear(in_features=5, out_features=1)
+).to(device)
+
+print(model_0.state_dict(),"\n")
+
+# Make predictions
+with torch.inference_mode():
+  untrained_preds = model_0(X_test.to(device))
+  print(f"Length of predictions: {len(untrained_preds)}, Shape: {untrained_preds.shape}")
+  print(f"Length of test samples: {len(X_test)}, Shape: {X_test.shape}")
+  print(f"\nFirst 10 predictions:\n{torch.round(untrained_preds[:10])}")
+  print(f"\nFirst 10 labels:\n{y_test[:10]}")
+
+# Setup the loss function
+# Loss_fn = nn.BCELoss # BCELoss = no sigmoid built-in
+loss_fn = nn.BCEWithLogitsLoss() # BCEWithLogitsLoss = sigmoid built-in
+
+# Create an optimizer
+optimizer = torch.optim.SGD(params=model_0.parameters(), 
+                            lr=0.1)
+
+#69
