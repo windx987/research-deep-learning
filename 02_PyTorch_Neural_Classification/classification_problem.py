@@ -57,4 +57,12 @@ X_train, X_test, y_train, y_test = train_test_split(X,
                                                     test_size=0.2,
                                                     random_state=42)
 
-print(len(X_train), len(X_test), len(y_train), len(y_test))
+print(len(X_train), len(X_test), len(y_train), len(y_test), n_samples)
+
+# Make device agnostic code
+device = "cuda" if torch.cuda.is_available() else "cpu"
+print(device)
+
+print(X_train)
+
+#page 66
