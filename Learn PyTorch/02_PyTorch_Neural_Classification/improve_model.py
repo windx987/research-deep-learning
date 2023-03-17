@@ -92,14 +92,14 @@ for epoch in range(epochs):
         print(f"Epoch: {epoch} | Loss: {loss:.5f}, Acc: {acc:.2f}% | Test loss: {test_loss:.5f}, Test acc: {test_acc:.2f}%")
 
 # Plot decision boundary of the model
-# plt.figure(figsize=(12, 6))
-# plt.subplot(1, 2, 1)
-# plt.title("Train")
-# plot_decision_boundary(model_1, X_train, y_train)
-# plt.subplot(1, 2, 2)
-# plt.title("Test")
-# plot_decision_boundary(model_1, X_test, y_test) 
-# plt.show()
+plt.figure(figsize=(12, 6))
+plt.subplot(1, 2, 1)
+plt.title("Train")
+plot_decision_boundary(model_1, X_train, y_train)
+plt.subplot(1, 2, 2)
+plt.title("Test")
+plot_decision_boundary(model_1, X_test, y_test) 
+plt.show()
 
 # Create some data (same as notebook 01)
 weight = 0.7
@@ -146,7 +146,7 @@ torch.manual_seed(42)
 torch.cuda.manual_seed(42)
 
 # Set the number of epochs
-epochs = 1000
+epochs = 0
 
 # Put data on the available device
 X_train_regression, X_test_regression, y_train_regression, y_test_regression = map(lambda x: x.to(device), (X_train_regression, X_test_regression, y_train_regression, y_test_regression))
@@ -177,12 +177,12 @@ with torch.inference_mode():
   y_preds = model_2(X_test_regression)
 
 # Plot data and predictions
-plot_predictions(train_data=X_train_regression.cpu(), 
-                 train_labels=y_train_regression.cpu(),
-                 test_data=X_test_regression.cpu(),
-                 test_labels=y_test_regression.cpu(),
-                 predictions=y_preds.cpu())
-plt.show()
+# plot_predictions(train_data=X_train_regression.cpu(), 
+#                  train_labels=y_train_regression.cpu(),
+#                  test_data=X_test_regression.cpu(),
+#                  test_labels=y_test_regression.cpu(),
+#                  predictions=y_preds.cpu())
+# plt.show()
 
 # 6. The missing piece: non-linearity
 # "What patterns could you draw if you were given an infinite amount of a straight and non-straight lines?"
@@ -194,5 +194,79 @@ X, y = make_circles(n_samples,
                     noise=0.03,
                     random_state=42)
 
-plt.scatter(X[:, 0], X[:, 1], c=y, cmap=plt.cm.RdYlBu)
+# Turn data into tensors
+X = torch.from_numpy(X).type(torch.float) 
+y = torch.from_numpy(y).type(torch.float)
+
+# plt.scatter(X[:, 0], X[:, 1], c=y, cmap=plt.cm.RdYlBu)
+# plt.show()
+
+X_train, X_test, y_train, y_test = train_test_split(X,
+                                                    y, 
+                                                    test_size=0.2,
+                                                    random_state=42) 
+print(X_train[:5], y_train[:5])
+
+class CircleModelV2(nn.Module):
+  def __init__(self):
+    super().__init__()
+    self.layer_1 = nn.Linear(in_features=2, out_features=10)
+    self.layer_2 = nn.Linear(in_features=10, out_features=10)
+    self.layer_3 = nn.Linear(in_features=10, out_features=1)
+    self.relu = nn.ReLU()
+
+  def forward(self, x):
+    return self.layer_3(self.relu(self.layer_2(self.relu(self.layer_1(x)))))
+  
+model_3 = CircleModelV2()
+print(model_3)
+
+# Train the model
+torch.manual_seed(42)
+torch.cuda.manual_seed(42)
+
+# Loss and optimizer
+loss_fn = nn.BCEWithLogitsLoss() # MAE loss with regression data
+optimizer = torch.optim.SGD(params=model_3.parameters(), 
+                            lr=0.1)  
+# Set the number of epochs
+epochs = 1000
+
+# Put data on the available device
+model_3.to(device)
+X_train, X_test, y_train, y_test = map(lambda x: x.to(device), (X_train, X_test, y_train, y_test))
+
+# Training
+for epoch in range(epochs):
+  model_3.train()
+  y_logits = model_3(X_train).squeeze()
+  y_pred = torch.round(torch.sigmoid(y_logits))
+  
+  loss = loss_fn(y_logits, y_train)
+  acc = accuracy_fn(y_true=y_train, y_pred=y_pred)
+
+  optimizer.zero_grad()
+  loss.backward()
+  optimizer.step()
+  
+  with torch.inference_mode():
+    test_logits = model_3(X_test).squeeze()
+    test_pred = torch.round(torch.sigmoid(test_logits))
+
+    test_loss = loss_fn(test_logits, y_test)
+    test_acc = accuracy_fn(y_true=y_test, y_pred=test_pred)
+    
+  if epoch % 100 == 0 :
+    print(f"Epoch: {epoch} | Loss: {loss:.5f}, Acc: {acc:.2f}% | Test loss: {test_loss:.5f}, Test acc: {test_acc:.2f}%")
+
+
+
+# Plot decision boundary of the model
+plt.figure(figsize=(12, 6))
+plt.subplot(1, 2, 1)
+plt.title("Train")
+plot_decision_boundary(model_3, X_train, y_train)
+plt.subplot(1, 2, 2)
+plt.title("Test")
+plot_decision_boundary(model_3, X_test, y_test) 
 plt.show()
