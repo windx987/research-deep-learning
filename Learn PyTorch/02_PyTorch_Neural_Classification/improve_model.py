@@ -230,7 +230,7 @@ loss_fn = nn.BCEWithLogitsLoss() # MAE loss with regression data
 optimizer = torch.optim.SGD(params=model_3.parameters(), 
                             lr=0.1)  
 # Set the number of epochs
-epochs = 1000
+epochs = 1500
 
 # Put data on the available device
 model_3.to(device)
@@ -259,8 +259,6 @@ for epoch in range(epochs):
   if epoch % 100 == 0 :
     print(f"Epoch: {epoch} | Loss: {loss:.5f}, Acc: {acc:.2f}% | Test loss: {test_loss:.5f}, Test acc: {test_acc:.2f}%")
 
-
-
 # Plot decision boundary of the model
 plt.figure(figsize=(12, 6))
 plt.subplot(1, 2, 1)
@@ -270,3 +268,4 @@ plt.subplot(1, 2, 2)
 plt.title("Test")
 plot_decision_boundary(model_3, X_test, y_test) 
 plt.show()
+
