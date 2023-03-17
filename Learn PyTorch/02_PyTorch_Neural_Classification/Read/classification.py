@@ -4,8 +4,8 @@ import torch
 from torch import nn
 from sklearn.datasets import make_circles
 from sklearn.model_selection import train_test_split
+from helper_function import *
 
-# 1. Make classification data and get it ready
 
 # Make 1000 samples
 n_samples = 1000
@@ -13,17 +13,10 @@ n_samples = 1000
 # Create circles
 X, y = make_circles(n_samples, noise=0.03, random_state=42)
 
-# print(len(X), len(y))
-# print(f"First 5 samples of X:\n {X[:5]}")
-# print(f"First 5 samples of y:\n {y[:5]}")
-
 circles = pd.DataFrame({"X1" : X[:, 0],
                         "X2" : X[:, 1],
                         "label" : y})
 # print(circles.head(10),"\n")
-
-# Check different labels
-# print(circles.label.value_counts())
 
 import matplotlib.pyplot as plt
 plt.scatter(x=X[:, 0],
@@ -92,10 +85,6 @@ model_0 = nn.Sequential(
 # Make predictions
 with torch.inference_mode():
   untrained_preds = model_0(X_test.to(device))
-  # print(f"Length of predictions: {len(untrained_preds)}, Shape: {untrained_preds.shape}")
-  # print(f"Length of test samples: {len(X_test)}, Shape: {X_test.shape}")
-  # print(f"\nFirst 10 predictions:\n{torch.round(untrained_preds[:10])}")
-  # print(f"\nFirst 10 labels:\n{y_test[:10]}")
 
 # Setup loss and optimizer function
 
@@ -116,10 +105,63 @@ def accuracy_fn(y_true, y_pred):
 model_0.eval() 
 with torch.inference_mode():
   y_logits = model_0(X_test.to(device))[:5]
-print(y_logits)
+# print(y_logits)
 
 # Use the sigmoid activation function on our model logits to turn them into prediction
 y_pred_probs = torch.sigmoid(y_logits)
-print(y_pred_probs)
+# print(y_pred_probs)
 
-print(torch.round(y_pred_probs))
+# Find the predicted labels 
+y_preds = torch.round(y_pred_probs)
+
+# In full (logits -> pred probs -> pred labels)
+y_pred_labels = torch.round(torch.sigmoid(model_0(X_test.to(device))[:5]))
+
+# Check for equality
+# print(torch.eq(y_preds.squeeze(), y_pred_labels.squeeze()))
+
+# Get rid of extra dimension
+# print(y_preds.squeeze())
+
+torch.manual_seed(42)
+torch.cuda.manual_seed(42) 
+
+# Set the number of epochs
+epochs = 1000
+
+# Put data on the available device
+X_train, X_test, y_train, y_test = map(lambda x: x.to(device), (X_train, X_test, y_train, y_test))
+
+for epoch in range(epochs):
+
+  model_0.train()
+  y_logits = model_0(X_train).squeeze()
+  y_pred = torch.round(torch.sigmoid(y_logits))
+
+  loss = loss_fn(y_logits, y_train) # nn.BCEWithLogitsLoss expects raw logits as input
+  acc = accuracy_fn(y_true=y_train, y_pred=y_pred)
+
+  optimizer.zero_grad()
+  loss.backward()
+  optimizer.step()
+
+  model_0.eval()
+  with torch.inference_mode():
+    test_logits = model_0(X_test).squeeze()
+    test_pred = torch.round(torch.sigmoid(test_logits))
+
+    test_loss = loss_fn(test_pred, y_test)
+    test_acc = accuracy_fn(y_true=y_test, y_pred=test_pred)
+
+  if epoch % 10 == 0:
+    print(f"Epoch: {epoch} | Loss: {loss:.5f}, Acc: {acc:.2f}% | Test loss: {test_loss:.5f}, Test acc: {test_acc:.2f}%")
+
+# Plot decision boundary of the model
+plt.figure(figsize=(12, 6))
+plt.subplot(1, 2, 1)
+plt.title("Train")
+plot_decision_boundary(model_0, X_train, y_train)
+plt.subplot(1, 2, 2)
+plt.title("Test")
+plot_decision_boundary(model_0, X_test, y_test) 
+plt.show()
