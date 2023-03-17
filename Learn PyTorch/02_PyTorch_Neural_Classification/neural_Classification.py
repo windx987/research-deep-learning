@@ -155,3 +155,5 @@ for epoch in range(epochs):
 
   if epoch % 10 == 0:
     print(f"Epoch: {epoch} | Loss: {loss:.5f}, Acc: {acc:.2f}% | Test loss: {test_loss:.5f}, Test acc: {test_acc:.2f}%")
+
+  plot_predictions(X_train, y_train, X_test, y_test, test_pred.cpu)
