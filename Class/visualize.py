@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 
 def loss_curves(epochs_count, trains_loss_values, tests_loss_values):
-    # Plot the loss curves
+
     plt.plot(epochs_count, trains_loss_values, label="Train loss")
     plt.plot(epochs_count, tests_loss_values, label="Test loss")
     plt.title("Training and test loss curves")
@@ -18,6 +18,6 @@ def plot_predictions(train_data, train_labels, test_data, test_labels, predictio
 
     if predictions is not None:
         plt.scatter(test_data, predictions, c="r", s=4, label="Predictions")
-
+        
     plt.legend(prop={"size": 14});
     plt.show()
