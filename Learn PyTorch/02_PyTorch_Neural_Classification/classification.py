@@ -121,3 +121,5 @@ print(y_logits)
 # Use the sigmoid activation function on our model logits to turn them into prediction
 y_pred_probs = torch.sigmoid(y_logits)
 print(y_pred_probs)
+
+print(torch.round(y_pred_probs))
