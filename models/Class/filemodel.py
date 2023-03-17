@@ -1,7 +1,6 @@
 from pathlib import Path
 import os
 import torch
-from torch import nn
 
 MODEL_PATH = Path("models")
 MODEL_PATH.mkdir(parents=True, exist_ok=True)
