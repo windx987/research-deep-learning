@@ -4,6 +4,8 @@ import torch
 from torch import nn
 from sklearn.datasets import make_circles
 from sklearn.model_selection import train_test_split
+from visualize import loss_curves, plot_predictions
+
 
 # Make 1000 samples
 n_samples = 1000
