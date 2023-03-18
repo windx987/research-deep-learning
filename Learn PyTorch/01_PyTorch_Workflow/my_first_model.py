@@ -21,7 +21,7 @@ step = 0.02
 
 X = torch.arange(start, end, step).unsqueeze(dim=1)
 y = weight * X + bias
-
+    
 # X[:10], y[:10]
 
 # Create train/test split

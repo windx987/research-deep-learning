@@ -4,6 +4,8 @@ import matplotlib.pyplot as plt
 from sklearn.datasets import make_blobs
 from sklearn.model_selection import train_test_split
 from helper_function import plot_predictions, plot_decision_boundary
+from torchmetrics import Accuracy
+
 
 # Calculate accuracy (a classification metric)
 def accuracy_fn(y_true, y_pred):
@@ -161,3 +163,9 @@ plt.title("Test")
 plot_decision_boundary(model_4, X_blob_test, y_blob_test)
 plt.show()
 
+# Setup metric
+torchmetric_accuracy = Accuracy(task="multiclass", num_classes=4).to(device)
+
+# Calculuate accuracy
+acc = torchmetric_accuracy(y_preds, y_blob_test)
+print(acc, acc.device)
