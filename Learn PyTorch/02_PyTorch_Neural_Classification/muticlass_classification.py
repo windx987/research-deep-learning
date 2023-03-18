@@ -114,7 +114,7 @@ X_blob_train, X_blob_test, y_blob_train, y_blob_test = map(lambda x: x.to(device
 for epoch in range(epochs):
 
     model_4.train()
-    y_logits = model_4(X_blob_train)
+    y_logits = model_4(X_blob_train).squeeze()
     y_pred = torch.softmax(y_logits, dim=1).argmax(dim=1)
     
     loss = loss_fn(y_logits, y_blob_train)
@@ -126,7 +126,7 @@ for epoch in range(epochs):
     
     model_4.eval()
     with torch.inference_mode():
-        test_logits = model_4(X_blob_test)
+        test_logits = model_4(X_blob_test).squeeze()
         test_preds = torch.softmax(test_logits, dim=1).argmax(dim=1)
         
         test_loss = loss_fn(test_logits, y_blob_test)
