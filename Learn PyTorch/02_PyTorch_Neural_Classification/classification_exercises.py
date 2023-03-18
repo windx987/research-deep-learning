@@ -3,6 +3,7 @@ from torch import nn
 
 import matplotlib.pyplot as plt
 import pandas as pd
+import numpy as np
 
 from sklearn.datasets import make_moons
 from sklearn.model_selection import train_test_split
@@ -67,10 +68,9 @@ y_preds = torch.round(y_pred_probs)
 y_pred_labels = torch.round(torch.sigmoid(model_5(X_test.to(device)[:5])))
 print(f"Pred labels:{y_pred_labels}")
 
-plot_decision_boundary(model=model_5, X=X_test, y=y_test)
-plt.show() #CPU
-
-model_5.to(device)
+# plot_decision_boundary(model=model_5, X=X_test, y=y_test)
+# plt.show() #CPU
+# model_5.to(device)
 
 # Loss and optimizer
 loss_fn = nn.BCEWithLogitsLoss() # MAE loss with regression data
@@ -82,7 +82,7 @@ torch.cuda.manual_seed(42)
 torch.manual_seed(42)
 
 # Set the number of epochs
-epochs = 1000
+epochs = 0
 
 # Put data on the available device
 X_train, X_test, y_train, y_test = map(lambda x: x.to(device), (X_train, X_test, y_train, y_test))
@@ -112,5 +112,21 @@ for epoch in range(epochs):
     if epoch % 100 == 0:
         print(f"Epoch: {epoch} | Loss: {loss:.4f}, Acc: {acc:.2f}% | Test loss: {test_loss:.4f}, Test acc: {test_acc:.2f}%")
 
-plot_decision_boundary(model=model_5, X=X_test, y=y_test)
+# plot_decision_boundary(model=model_5, X=X_test, y=y_test)
+# plt.show()
+
+tensor_A = torch.arange(-100, 100, 1)
+plt.plot(tensor_A)
 plt.show()
+
+def tanh(z):
+	return (np.exp(z) - np.exp(-z)) / (np.exp(z) + np.exp(-z))
+
+plt.plot(tanh(tensor_A))
+plt.show()
+
+plt.plot(torch.tanh(tensor_A))
+plt.show()
+
+# https://youtube.com/watch?v=Fu273ovPBmQ
+# https://en.wikipedia.org/wiki/Activation_function#Table_of_activation_functions
