@@ -36,4 +36,44 @@ test_data = datasets.FashionMNIST(
 
 # print data
 print(train_data, test_data)
+print(len(train_data), len(test_data))
+
+# see the first training dataset
+image, label = train_data[0]
+# print(image, label)
+class_names = train_data.classes 
+# print(class_names)
+class_to_idx = train_data.class_to_idx 
+# print(class_to_idx)
+
+# Check the shape of our image
+print(f"Image shape: {image.shape} -> [color_channels, height, width]") 
+print(f"Image label: {class_names[label]}")
+
+# visualize the image
+image, label = train_data[0]
+print(f"\nImage shape: {image.shape}")
+# plt.imshow(image.squeeze())
+# plt.title(label)
+# plt.show()
+
+# plt.imshow(image.squeeze(), cmap="gray")
+# plt.title(class_names[label])
+# plt.axis(False)
+# plt.show()
+
+# torch.manual_seed(42)
+
+# plot more images
+fig = plt.figure(figsize=(9, 9))
+row, cols = 4, 4
+for i in range(1, row*cols+1):
+    random_idx = torch.randint(0, len(train_data), size=[1]).item()
+    print(random_idx)
+    img, label = train_data[random_idx]
+    fig.add_subplot(row, cols, i)
+    plt.imshow(img.squeeze(), cmap="gray")
+    plt.title(class_names[label])
+    plt.axis(False)
+plt.show()
 
