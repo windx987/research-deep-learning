@@ -278,3 +278,23 @@ device = "cuda" if torch.cuda.is_available() else "cpu"
 print(f"Using device: {device}")
 
 # Create a model with non-linear and linear layers
+# page 105
+
+class FashionMNISTModelV1(nn.Module):
+    def __init__(self, input_shape:int, hidden_units:int, output_shape:int):
+        super().__init__()
+        self.layer_stack = nn.Sequential(
+            nn.Flatten(),
+            nn.Linear(in_features=input_shape, out_features=hidden_units),
+            nn.ReLU(),
+            nn.Linear(in_features=hidden_units, out_features=output_shape)
+        )
+    def forward(self, x):
+        return self.layer_stack(x)
+
+## training function
+def train_model(model: torch.nn.Module,
+               data_loader: torch.utils.data.DataLoader,
+               loss_fn: torch.nn.Module, 
+               accuracy_fn):
+    
