@@ -3,7 +3,7 @@ import torch
 from torch import nn
 
 # Import helper functions
-from helper_function import plot_predictions, plot_decision_boundary, accuracy_fn
+from helper_function import accuracy_fn
 
 # Import tqdm for progress bar
 from tqdm.auto import tqdm
