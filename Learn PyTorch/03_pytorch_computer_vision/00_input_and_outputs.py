@@ -242,6 +242,8 @@ total_train_time_model_0 = print_train_time(start=train_time_start_on_cpu, end=t
 print("\n")
 
 # Make predictions and get Model results with functions
+
+## testing function
 torch.manual_seed(42)
 def eval_model(model: torch.nn.Module,
                data_loader: torch.utils.data.DataLoader,
@@ -252,6 +254,8 @@ def eval_model(model: torch.nn.Module,
     model.eval()
     with torch.inference_mode():
         for X, y in tqdm(data_loader):
+        ## Send the data to the target device
+            X, y = X.to(device), y.to(device)
         ## 1. Forward pass
             y_pred = model(X)
         ## 2. Calcurate the loss (accumulatively)
@@ -287,14 +291,64 @@ class FashionMNISTModelV1(nn.Module):
             nn.Flatten(),
             nn.Linear(in_features=input_shape, out_features=hidden_units),
             nn.ReLU(),
-            nn.Linear(in_features=hidden_units, out_features=output_shape)
+            nn.Linear(in_features=hidden_units, out_features=output_shape),
+            nn.ReLU()
         )
     def forward(self, x):
         return self.layer_stack(x)
+    
+model_1 = FashionMNISTModelV1(
+    input_shape=28*28, # this is 784
+    hidden_uints=10, # how many uints in hidden layer
+    output_shape=len(class_names) # how many uints in output layer
+).to(device)
+    
+loss_fn = nn.CrossEntropyLoss() # measure how wrong our model is
+optimizer = torch.optim.SGD(params=model_1.parameters(), # tries to update our model's parameters to reduce the loss 
+                            lr=0.1)
 
 ## training function
-def train_model(model: torch.nn.Module,
+def train_step(model: torch.nn.Module,
                data_loader: torch.utils.data.DataLoader,
                loss_fn: torch.nn.Module, 
                accuracy_fn):
-    
+    """ ARG: something """
+    train_loss, train_acc = 0, 0
+    model.train()
+    for X, y in tqdm(data_loader):
+        ## Send the data to the target device
+            X, y = X.to(device), y.to(device)
+        ## 1. Forward pass
+            y_pred = model(X)
+        ## 2. Calcurate the loss (per batch)
+            loss = loss_fn(y_pred, y)
+            train_loss += loss
+        ## Calculate loss and accuracy
+            train_acc += accuracy_fn(y_true=y, 
+                               y_pred=y_pred.argmax(dim=1))   
+        ## 3. optimzer zero gradient 
+            optimizer.zero_grad()
+        ## 4. Loss backward    
+            loss.backward()
+        ## 5. optimzer step (update the model's parameters once *per batch*)
+            optimizer.step()
+
+    ### Divide total train loss and acc by length of train dataloader
+    train_loss /= len(data_loader)
+    train_acc /= len(data_loader)
+    print(f"Train loss: {train_loss:.5f} | Train acc: {train_acc:.2f}%")
+
+    return {"model_name": model.__class__.__name__,
+            "model_loss": train_loss.item(),
+            "model_acc": train_acc} 
+
+# # Set the seed and start the timer
+# torch.manual_seed(42)
+# train_time_start_on_cpu = timer() 
+
+# # Set the number of epochs (we'll keep this small for faster training time)
+# epochs = 3
+
+# # Create training and test loop
+# for epoch in tqdm(range(epochs)):
+#     print(f"Epoch: {epoch}\n------")
