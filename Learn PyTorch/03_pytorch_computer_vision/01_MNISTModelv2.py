@@ -117,8 +117,39 @@ class FashionMNISTModelV2(nn.Module):
     )
     self.classifier = nn.Sequential(
     nn.Flatten(),
-    nn.Linear(in_features=hidden_units,
+    nn.Linear(in_features=hidden_units*0*0,  # there's a trick to calculating this...
               out_features=output_shape)
     )
+
   def forward(self, x):
     return self.classifier(self.conv_block2(self.conv_block1(x)))
+
+torch.manual_seed(42)
+model_2 = FashionMNISTModelV2(input_shape=1,
+                              hidden_units=10,
+                              output_shape=len(class_names)).to(device)
+print(model_2)
+
+torch.manual_seed(42)
+images = torch.randn(size=(32, 3, 64, 64))
+test_image = images[0]
+
+print(f"Image batch shape: {images.shape}")
+print(f"Single image shape: {test_image.shape}")
+# print(f"Test image:\n {test_image}")
+
+conv_layer = nn.Conv2d(in_channels=3,
+                       out_channels=10,
+                       kernel_size=(3, 3),
+                       stride=1,
+                       padding=1)
+
+conv_output = conv_layer(test_image)
+print(conv_output.shape, "\n")
+
+# Print out original image shape without unsqueezed dimension
+print(f"Test image original shape: {test_image.shape}")
+print(f"Test image with unsqueezed dimension: {test_image.unsqueeze(0).shape}")
+
+# Create a sample nn.MaxPool2d layer
+max_pool_layer = 
