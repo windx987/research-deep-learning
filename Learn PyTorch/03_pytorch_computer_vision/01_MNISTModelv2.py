@@ -117,7 +117,7 @@ class FashionMNISTModelV2(nn.Module):
     )
     self.classifier = nn.Sequential(
     nn.Flatten(),
-    nn.Linear(in_features=hidden_units*0*0,  # there's a trick to calculating this...
+    nn.Linear(in_features=hidden_units*7*7,  # there's a trick to calculating this...
               out_features=output_shape)
     )
 
@@ -129,6 +129,79 @@ model_2 = FashionMNISTModelV2(input_shape=1,
                               hidden_units=10,
                               output_shape=len(class_names)).to(device)
 print(model_2)
+
+loss_fn = nn.CrossEntropyLoss()
+optimizer = torch.optim.SGD(params=model_2.parameters(), lr=0.1)
+
+def train_step(model: torch.nn.Module,
+               data_loader: torch.utils.data.DataLoader,
+               loss_fn: torch.nn.Module,
+               optimizer: torch.optim.Optimizer,
+               accuracy_fn,
+               device: torch.device = device):
+  """Performs a training with model trying to learn on data_loader."""
+  train_loss, train_acc = 0, 0
+
+  # Put model into training mode
+  model.train()
+
+  # Add a loop to loop through the training batches
+  for batch, (X, y) in enumerate(data_loader):
+    # Put data on target device 
+    X, y = X.to(device), y.to(device)
+
+    # 1. Forward pass (outputs the raw logits from the model)
+    y_pred = model(X)
+    
+    # 2. Calculate loss and accuracy (per batch)
+    loss = loss_fn(y_pred, y)
+    train_loss += loss # accumulate train loss
+    train_acc += accuracy_fn(y_true=y,
+                             y_pred=y_pred.argmax(dim=1)) # go from logits -> prediction labels
+    
+    # 3. Optimizer zero grad
+    optimizer.zero_grad()
+    
+    # 4. Loss backward
+    loss.backward()
+    
+    # 5. Optimizer step (update the model's parameters once *per batch*)
+    optimizer.step()
+  
+  # Divide total train loss and acc by length of train dataloader
+  train_loss /= len(data_loader)
+  train_acc /= len(data_loader)
+  print(f"Train loss: {train_loss:.5f} | Train acc: {train_acc:.2f}%")
+
+def test_step(model: torch.nn.Module,
+              data_loader: torch.utils.data.DataLoader, 
+              loss_fn: torch.nn.Module,
+              accuracy_fn,
+              device: torch.device = device):
+  """Performs a testing loop step on model going over data_loader."""
+  test_loss, test_acc = 0, 0
+  
+  # Put the model in eval mode
+  model.eval()
+
+  # Turn on inference mode context manager
+  with torch.inference_mode():
+    for X, y in data_loader:
+      # Send the data to the target device
+      X, y = X.to(device), y.to(device)
+
+      # 1. Forward pass (outputs raw logits)
+      test_pred = model(X)
+
+      # 2. Calculuate the loss/acc
+      test_loss += loss_fn(test_pred, y)
+      test_acc += accuracy_fn(y_true=y,
+                              y_pred=test_pred.argmax(dim=1)) # go from logits -> prediction labels 
+
+    # Adjust metrics and print out
+    test_loss /= len(data_loader)
+    test_acc /= len(data_loader)
+    print(f"Test loss: {test_loss:.5f} | Test acc: {test_acc:.2f}%\n")
 
 torch.manual_seed(42)
 images = torch.randn(size=(32, 3, 64, 64))
@@ -142,14 +215,67 @@ conv_layer = nn.Conv2d(in_channels=3,
                        out_channels=10,
                        kernel_size=(3, 3),
                        stride=1,
-                       padding=1)
+                       padding=0)
 
+# Pass the data through the convolutional layer 
 conv_output = conv_layer(test_image)
-print(conv_output.shape, "\n")
+# print(conv_output.shape)
 
 # Print out original image shape without unsqueezed dimension
 print(f"Test image original shape: {test_image.shape}")
 print(f"Test image with unsqueezed dimension: {test_image.unsqueeze(0).shape}")
 
 # Create a sample nn.MaxPool2d layer
-max_pool_layer = 
+max_pool_layer = nn.MaxPool2d(kernel_size=2)
+
+# Pass data through just the conv_layer
+test_image_through_conv = conv_layer(test_image.unsqueeze(dim=0))
+print(f"Shape after going through conv_layer(): {test_image_through_conv.shape}")
+
+# Pass data through the max pool layer
+test_image_through_conv_and_max_pool = max_pool_layer(test_image_through_conv)
+print(f"Shape after going through conv_layer() and max_pool_layer(): {test_image_through_conv_and_max_pool.shape}\n")
+
+torch.manual_seed(42)
+# Create a random tesnor with a similar number of dimensions to our images
+random_tensor = torch.randn(size=(1, 1, 2, 2))
+print(f"\nRandom tensor:\n{random_tensor}")
+print(f"Random tensor shape: {random_tensor.shape}")
+
+# Pass the random tensor through the max pool layer
+max_pool_tensor = max_pool_layer(random_tensor)
+print(f"\nMax pool tensor:\n {max_pool_tensor}")
+print(f"Max pool tensor shape: {max_pool_tensor.shape}\n")
+
+
+dummy = torch.randn(size=(1, 28, 28))
+test_dummy = model_2(dummy.to(device).unsqueeze(0))
+print(test_dummy, test_dummy.shape)
+
+torch.manual_seed(42)
+torch.cuda.manual_seed(42)
+
+# Measure time
+train_time_start_model_2 = timer() 
+
+# Train and test model
+epochs = 3
+for epoch in tqdm(range(epochs)):
+  print(f"Epoch: {epoch}\n-------")
+  train_step(model=model_2,
+             data_loader=train_dataloader,
+             loss_fn=loss_fn,
+             optimizer=optimizer,
+             accuracy_fn=accuracy_fn,
+             device=device)
+  test_step(model=model_2,
+            data_loader=test_dataloader,
+            loss_fn=loss_fn,
+            accuracy_fn=accuracy_fn,
+            device=device)
+
+train_time_end_model_2 = timer()
+total_train_time_model_2 = print_train_time(start=train_time_start_model_2,
+                                            end=train_time_end_model_2,
+                                            device=device)
+

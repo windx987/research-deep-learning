@@ -73,7 +73,7 @@ print(f"Lenght:{len(train_dataloader)} batches of {BATCH_SIZE}...")
 print(f"Lenght:{len(test_dataloader)} batches of {BATCH_SIZE}...")
 print("\n")
 
-flatten_model = v
+flatten_model = nn.Flatten()
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 print(f"Using device: {device}")
