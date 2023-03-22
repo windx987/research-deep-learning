@@ -77,7 +77,7 @@ print("\n")
 
 flatten_model = nn.Flatten()
 
-device = "cuda" if torch.cuda.is_available() else "cpu"
+device = "cuda:0" if torch.cuda.is_available() else "cpu"
 print(f"Using device: {device}")
 
 # create CCN
@@ -167,6 +167,10 @@ def train_step(model: torch.nn.Module,
     
     # 5. Optimizer step (update the model's parameters once *per batch*)
     optimizer.step()
+
+    ## Print out what's happening
+    if batch % 400 == 0:
+      print(f"Looked at {batch * len(X)}/{len(train_dataloader.dataset)} samples.")
   
   # Divide total train loss and acc by length of train dataloader
   train_loss /= len(data_loader)
@@ -203,54 +207,54 @@ def test_step(model: torch.nn.Module,
     test_acc /= len(data_loader)
     print(f"Test loss: {test_loss:.5f} | Test acc: {test_acc:.2f}%\n")
 
-torch.manual_seed(42)
-images = torch.randn(size=(32, 3, 64, 64))
-test_image = images[0]
+# torch.manual_seed(42)
+# images = torch.randn(size=(32, 3, 64, 64))
+# test_image = images[0]
 
-print(f"Image batch shape: {images.shape}")
-print(f"Single image shape: {test_image.shape}")
-# print(f"Test image:\n {test_image}")
+# print(f"Image batch shape: {images.shape}")
+# print(f"Single image shape: {test_image.shape}")
+# # print(f"Test image:\n {test_image}")
 
-conv_layer = nn.Conv2d(in_channels=3,
-                       out_channels=10,
-                       kernel_size=(3, 3),
-                       stride=1,
-                       padding=0)
+# conv_layer = nn.Conv2d(in_channels=3,
+#                        out_channels=10,
+#                        kernel_size=(3, 3),
+#                        stride=1,
+#                        padding=0)
 
-# Pass the data through the convolutional layer 
-conv_output = conv_layer(test_image)
-# print(conv_output.shape)
+# # Pass the data through the convolutional layer 
+# conv_output = conv_layer(test_image)
+# # print(conv_output.shape)
 
-# Print out original image shape without unsqueezed dimension
-print(f"Test image original shape: {test_image.shape}")
-print(f"Test image with unsqueezed dimension: {test_image.unsqueeze(0).shape}")
+# # Print out original image shape without unsqueezed dimension
+# print(f"Test image original shape: {test_image.shape}")
+# print(f"Test image with unsqueezed dimension: {test_image.unsqueeze(0).shape}")
 
-# Create a sample nn.MaxPool2d layer
-max_pool_layer = nn.MaxPool2d(kernel_size=2)
+# # Create a sample nn.MaxPool2d layer
+# max_pool_layer = nn.MaxPool2d(kernel_size=2)
 
-# Pass data through just the conv_layer
-test_image_through_conv = conv_layer(test_image.unsqueeze(dim=0))
-print(f"Shape after going through conv_layer(): {test_image_through_conv.shape}")
+# # Pass data through just the conv_layer
+# test_image_through_conv = conv_layer(test_image.unsqueeze(dim=0))
+# print(f"Shape after going through conv_layer(): {test_image_through_conv.shape}")
 
-# Pass data through the max pool layer
-test_image_through_conv_and_max_pool = max_pool_layer(test_image_through_conv)
-print(f"Shape after going through conv_layer() and max_pool_layer(): {test_image_through_conv_and_max_pool.shape}\n")
+# # Pass data through the max pool layer
+# test_image_through_conv_and_max_pool = max_pool_layer(test_image_through_conv)
+# print(f"Shape after going through conv_layer() and max_pool_layer(): {test_image_through_conv_and_max_pool.shape}\n")
 
-torch.manual_seed(42)
-# Create a random tesnor with a similar number of dimensions to our images
-random_tensor = torch.randn(size=(1, 1, 2, 2))
-print(f"\nRandom tensor:\n{random_tensor}")
-print(f"Random tensor shape: {random_tensor.shape}")
+# torch.manual_seed(42)
+# # Create a random tesnor with a similar number of dimensions to our images
+# random_tensor = torch.randn(size=(1, 1, 2, 2))
+# print(f"\nRandom tensor:\n{random_tensor}")
+# print(f"Random tensor shape: {random_tensor.shape}")
 
-# Pass the random tensor through the max pool layer
-max_pool_tensor = max_pool_layer(random_tensor)
-print(f"\nMax pool tensor:\n {max_pool_tensor}")
-print(f"Max pool tensor shape: {max_pool_tensor.shape}\n")
+# # Pass the random tensor through the max pool layer
+# max_pool_tensor = max_pool_layer(random_tensor)
+# print(f"\nMax pool tensor:\n {max_pool_tensor}")
+# print(f"Max pool tensor shape: {max_pool_tensor.shape}\n")
 
 
-dummy = torch.randn(size=(1, 28, 28))
-test_dummy = model_2(dummy.to(device).unsqueeze(0))
-print(test_dummy, test_dummy.shape)
+# dummy = torch.randn(size=(1, 28, 28))
+# test_dummy = model_2(dummy.to(device).unsqueeze(0))
+# print(test_dummy, test_dummy.shape)
 
 torch.manual_seed(42)
 torch.cuda.manual_seed(42)
@@ -278,4 +282,12 @@ train_time_end_model_2 = timer()
 total_train_time_model_2 = print_train_time(start=train_time_start_model_2,
                                             end=train_time_end_model_2,
                                             device=device)
+
+
+def make_predictions(model: torch.nn.Module, data: list, device: torch.device = device):
+  pred_probs = []
+  model.eval()
+  with torch.inference_mode():
+    for sample in data:
+
 

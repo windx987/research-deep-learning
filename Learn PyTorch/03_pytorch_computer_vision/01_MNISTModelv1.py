@@ -108,7 +108,7 @@ def train_step(model: torch.nn.Module,
                device: torch.device = device):
     train_loss, train_acc = 0, 0
     model.train()
-    for X, y in enumerate(data_loader):
+    for batch, (X, y) in enumerate(data_loader):
         X, y = X.to(device), y.to(device)
         y_pred = model(X)
     
