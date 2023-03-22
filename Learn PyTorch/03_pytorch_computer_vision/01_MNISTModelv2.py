@@ -77,7 +77,7 @@ print("\n")
 
 flatten_model = nn.Flatten()
 
-device = "cuda:0" if torch.cuda.is_available() else "cpu"
+device = "cuda" if torch.cuda.is_available() else "cpu"
 print(f"Using device: {device}")
 
 # create CCN
@@ -126,12 +126,12 @@ class FashionMNISTModelV2(nn.Module):
 
 torch.manual_seed(42)
 model_2 = FashionMNISTModelV2(input_shape=1,
-                              hidden_units=10,
+                              hidden_units=30,
                               output_shape=len(class_names)).to(device)
 print(model_2)
 
 loss_fn = nn.CrossEntropyLoss()
-optimizer = torch.optim.SGD(params=model_2.parameters(), lr=0.1)
+optimizer = torch.optim.SGD(params=model_2.parameters(), lr=0.01)
 
 def train_step(model: torch.nn.Module,
                data_loader: torch.utils.data.DataLoader,
@@ -263,7 +263,7 @@ torch.cuda.manual_seed(42)
 train_time_start_model_2 = timer() 
 
 # Train and test model
-epochs = 3
+epochs = 10
 for epoch in tqdm(range(epochs)):
   print(f"Epoch: {epoch}\n-------")
   train_step(model=model_2,
@@ -344,7 +344,7 @@ for i, sample in enumerate(test_samples):
     plt.title(title_text, fontsize=10, c="g") 
   else:
     plt.title(title_text, fontsize=10, c="r") 
-  
+
   plt.axis(False)
   
 plt.show()
