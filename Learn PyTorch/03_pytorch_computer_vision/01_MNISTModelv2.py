@@ -16,6 +16,7 @@ from torchvision.transforms import ToTensor
 from torch.utils.data import DataLoader
 
 # Import matplotlib for visualization
+import numpy as numpy
 import matplotlib.pyplot as plt
 
 from timeit import default_timer as timer
@@ -349,3 +350,44 @@ for i, sample in enumerate(test_samples):
   
 plt.show()
 
+# Import tqdm.auto
+from tqdm.auto import tqdm 
+
+# 1. Make predictions with trained model
+y_preds = []
+model_2.eval()
+
+with torch.inference_mode():
+  for X, y in tqdm(test_dataloader, desc="Making predictions..."):
+    # Send the data and targets to target device
+    X, y = X.to(device), y.to(device)
+    # Do the forward pass
+    y_logit = model_2(X)
+    # Turn predictions from logits -> prediction probabilities -> prediction labels
+    y_pred = torch.softmax(y_logit.squeeze(), dim=0).argmax(dim=1)
+    # Put prediction on CPU for evaluation
+    y_preds.append(y_pred.cpu())
+
+# Concatenate list of predictions into a tensor
+# print(y_preds)
+y_pred_tensor = torch.cat(y_preds)
+y_pred_tensor
+
+import torchmetrics, mlxtend
+print(f"mlxtend version: {mlxtend.__version__}")
+
+from torchmetrics import ConfusionMatrix
+from mlxtend.plotting import plot_confusion_matrix
+
+# 2. Setup confusion instance and compare predictions to targets
+confmat = ConfusionMatrix(task="multiclass", num_classes=len(class_names))
+confmat_tensor = confmat(preds=y_pred_tensor,
+                         target=test_data.targets)
+
+# 3. Plot the confusion matrix
+fig, ax = plot_confusion_matrix(
+    conf_mat=confmat_tensor.numpy(), # matplotlib likes working with numpy
+    class_names=class_names,
+    figsize=(10, 7)
+)
+plt.show()
