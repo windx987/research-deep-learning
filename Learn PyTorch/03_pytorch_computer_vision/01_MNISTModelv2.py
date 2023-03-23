@@ -258,6 +258,35 @@ def test_step(model: torch.nn.Module,
 # print(test_dummy, test_dummy.shape)
 
 torch.manual_seed(42)
+def eval_model(model: torch.nn.Module,
+               data_loader: torch.utils.data.DataLoader,
+               loss_fn: torch.nn.Module, 
+               accuracy_fn,
+               device=device):
+  """Returns a dictionary containing the results of model predicting on data_loader."""
+  loss, acc = 0, 0
+  model.eval()
+  with torch.inference_mode():
+    for X, y in tqdm(data_loader):
+      # Make our data device agnostic
+      X, y = X.to(device), y.to(device)
+      # Make predictions
+      y_pred = model(X)
+
+      # Accumulate the loss and acc values per batch
+      loss += loss_fn(y_pred, y)
+      acc += accuracy_fn(y_true=y,
+                         y_pred=y_pred.argmax(dim=1))
+
+    # Scale loss and acc to find the average loss/acc per batch
+    loss /= len(data_loader)
+    acc /= len(data_loader)
+
+  return {"model_name": model.__class__.__name__, # only works when model was created with a class
+          "model_loss": loss.item(),
+          "model_acc": acc}
+
+torch.manual_seed(42)
 torch.cuda.manual_seed(42)
 
 # Measure time
@@ -283,6 +312,17 @@ train_time_end_model_2 = timer()
 total_train_time_model_2 = print_train_time(start=train_time_start_model_2,
                                             end=train_time_end_model_2,
                                             device=device)
+
+# Get model_2 results
+model_2_results = eval_model(
+     model=model_2,
+     data_loader=test_dataloader,
+     loss_fn=loss_fn,
+     accuracy_fn=accuracy_fn,
+     device=device
+)
+
+model_2_results
 
 def make_predictions(model: torch.nn.Module, data: list, device: torch.device = device):
   pred_probs = []
@@ -391,3 +431,53 @@ fig, ax = plot_confusion_matrix(
     figsize=(10, 7)
 )
 plt.show()
+
+from pathlib import Path
+
+# Create models directory (if it doesn't already exist), see: https://docs.python.org/3/library/pathlib.html#pathlib.Path.mkdir
+MODEL_PATH = Path("models")
+MODEL_PATH.mkdir(parents=True, # create parent directories if needed
+                 exist_ok=True # if models directory already exists, don't error
+)
+
+# Create model save path
+MODEL_NAME = "03_pytorch_computer_vision_model_2.pth"
+MODEL_SAVE_PATH = MODEL_PATH / MODEL_NAME
+
+# Save the model state dict
+print(f"Saving model to: {MODEL_SAVE_PATH}")
+torch.save(obj=model_2.state_dict(), # only saving the state_dict() only saves the learned parameters
+           f=MODEL_SAVE_PATH)
+
+# Create a new instance
+torch.manual_seed(42)
+
+loaded_model_2 = FashionMNISTModelV2(input_shape=1,
+                                     hidden_units=10,
+                                     output_shape=len(class_names))
+
+# Load in the save state_dict()
+loaded_model_2.load_state_dict(torch.load(f=MODEL_SAVE_PATH))
+
+# Send the model to the target device
+loaded_model_2.to(device)
+
+
+# Evaluate loaded model
+torch.manual_seed(42)
+
+loaded_model_2_results = eval_model(
+    model=loaded_model_2,
+    data_loader=test_dataloader,
+    loss_fn=loss_fn,
+    accuracy_fn=accuracy_fn
+)
+
+print(loaded_model_2_results)
+print(model_2_results)
+
+# Check if model results are close to each other
+check = torch.isclose(torch.tensor(model_2_results["model_loss"]),
+              torch.tensor(loaded_model_2_results["model_loss"]),
+              atol=1e-02)
+print(check)
