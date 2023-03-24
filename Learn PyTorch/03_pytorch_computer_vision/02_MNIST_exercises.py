@@ -43,6 +43,9 @@ import matplotlib.pyplot as plt
 
 from timeit import default_timer as timer
 
+device = "cuda" if torch.cuda.is_available() else "cpu"
+print(f"Using device: {device}")
+
 # Setup training data 
 train_data = datasets.MNIST(root="data", train=True, transform=ToTensor(), target_transform=None, download=True)
 test_data = datasets.MNIST(root="data", train=False, transform=ToTensor(), target_transform=None, download=True)
@@ -80,6 +83,66 @@ print(f"DataLoder:{train_dataloader, test_dataloader}")
 print(f"Lenght:{len(train_dataloader)} batches of {BATCH_SIZE}...")
 print(f"Lenght:{len(test_dataloader)} batches of {BATCH_SIZE}...")
 print("\n")
+
+def print_train_time(start: float,
+                     end: float, 
+                     device: torch.device = None):
+  """Prints difference between start and end time."""
+  total_time = end - start
+  print(f"Train time on {device}: {total_time:.3f} seconds")
+  return total_time
+
+def train_step(model: torch.nn.Module,
+               data_loader: torch.utils.data.DataLoader,
+               loss_fn: torch.nn.Module,
+               optimizer: torch.optim.Optimizer,
+               accuracy_fn,
+               device: torch.device = device):
+  train_loss, train_acc = 0, 0
+
+  model.train()
+
+  for batch, (X, y) in enumerate(data_loader):
+    X, y = X.to(device), y.to(device)
+
+    y_pred = model(X)
+
+    loss = loss_fn(y_pred, y)
+    train_loss += loss # accumulate train loss
+    train_acc += accuracy_fn(y_true=y,
+                             y_pred=y_pred.argmax(dim=1)) # go from logits -> prediction labels
+    optimizer.zero_grad()
+    loss.backward()
+    optimizer.step()
+
+    if batch % 400 == 0:
+      print(f"Looked at {batch * len(X)}/{len(train_dataloader.dataset)} samples.")
+  
+  train_loss /= len(data_loader)
+  train_acc /= len(data_loader)
+  print(f"Train loss: {train_loss:.5f} | Train acc: {train_acc:.2f}")
+
+def test_step(model: torch.nn.Module,
+              data_loader: torch.utils.data.DataLoader, 
+              loss_fn: torch.nn.Module,
+              accuracy_fn,
+              device: torch.device = device):
+  
+  test_loss, test_acc = 0, 0
+  model.eval()
+
+  with torch.inference_mode():
+    for X, y in data_loader:
+      X, y = X.to(device), y.to(device)
+
+      test_pred = model(X)
+      test_loss += loss_fn(test_pred, y)
+      test_acc += accuracy_fn(y_true=y,
+                              y_pred=test_pred.argmax(dim=1)) # go from logits -> prediction labels 
+
+    test_loss /= len(data_loader)
+    test_acc /= len(data_loader)
+    print(f"Test loss: {test_loss:.5f} | Test acc: {test_acc:.2f}\n")
 
 # create CCN
 class MNIST_model(nn.Module):
@@ -120,27 +183,59 @@ class MNIST_model(nn.Module):
         )
         self.classifier = nn.Sequential(
             nn.Flatten(),
-            nn.Linear(in_features=hidden_units*7*7,
+            nn.Linear(in_features=hidden_units*7*7, # multiple with flatten of the above layer
                       out_features=output_shape)
         )
 
     def forward(self, x):
-        x = self.conv_block_1(x)
-        print(f"Output shape of conv block 1: {x.shape}")
-        x = self.conv_block_2(x)
-        print(f"Output shape of conv block 2: {x.shape}")
-        x = self.conv_block_3(x)
-        print(f"Output shape of conv block 3: {x.shape}")
-        x = self.classifier(x)
-        print(f"Output shape of classifier: {x.shape}")
-        return x
+        return self.classifier(self.conv_block_2(self.conv_block_1(x)))
 
-device = "cuda" if torch.cuda.is_available() else "cpu"
+device = "cpu"
 print(f"Using device: {device}")
 
-model = MNIST_model(input_shape=1,
+model_cpu = MNIST_model(input_shape=1,
                     hidden_units=10,
                     output_shape=10).to(device)
 
-# Check out the model state dict to find out what patterns our model wants to learn
-print(model)
+loss_fn = nn.CrossEntropyLoss()
+optimizer = torch.optim.SGD(params=model_cpu.parameters(), lr=0.1)
+
+# Measure time
+train_time_start_on_cpu = timer() 
+
+epochs = 5
+for epoch in tqdm(range(epochs)):
+    print(f"Epoch: {epoch}\n-------")
+    train_step(model=model_cpu, data_loader=train_dataloader, loss_fn=loss_fn, optimizer=optimizer, accuracy_fn=accuracy_fn, device=device)
+    test_step(model=model_cpu, data_loader=test_dataloader, loss_fn=loss_fn, accuracy_fn=accuracy_fn, device=device)
+    
+# Measure time
+train_time_end_on_cpu = timer()
+total_train_time_on_cpu = print_train_time(start=train_time_start_on_cpu, end=train_time_end_on_cpu, device=device)
+
+
+# train on gpu
+device = "cuda" if torch.cuda.is_available() else "cpu"
+print(f"Using device: {device}")
+
+model_gpu = MNIST_model(input_shape=1,
+                    hidden_units=10,
+                    output_shape=10).to(device)
+
+loss_fn = nn.CrossEntropyLoss()
+optimizer = torch.optim.SGD(params=model_gpu.parameters(), lr=0.1)
+
+# Measure time
+train_time_start_on_gpu = timer() 
+
+epochs = 5
+for epoch in tqdm(range(epochs)):
+    print(f"Epoch: {epoch}\n-------")
+    train_step(model=model_gpu, data_loader=train_dataloader, loss_fn=loss_fn, optimizer=optimizer, accuracy_fn=accuracy_fn, device=device)
+    test_step(model=model_gpu, data_loader=test_dataloader, loss_fn=loss_fn, accuracy_fn=accuracy_fn, device=device)
+    
+# Measure time
+train_time_end_on_gpu = timer()
+total_train_time_on_gpu = print_train_time(start=train_time_start_on_gpu, end=train_time_end_on_gpu, device=device)
+
+

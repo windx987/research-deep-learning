@@ -118,7 +118,7 @@ class FashionMNISTModelV2(nn.Module):
     )
     self.classifier = nn.Sequential(
     nn.Flatten(),
-    nn.Linear(in_features=hidden_units*7*7,  # there's a trick to calculating this...
+    nn.Linear(in_features=hidden_units*7*7,  # there's a trick to calculating this... 
               out_features=output_shape)
     )
 
