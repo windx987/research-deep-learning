@@ -238,4 +238,3 @@ for epoch in tqdm(range(epochs)):
 train_time_end_on_gpu = timer()
 total_train_time_on_gpu = print_train_time(start=train_time_start_on_gpu, end=train_time_end_on_gpu, device=device)
 
-
