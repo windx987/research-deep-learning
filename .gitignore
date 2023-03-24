@@ -1,7 +1,7 @@
 # folder hidden
 .note
 .vscode
-.data
+data
 # function hidden
 __pycache__
 helper_function.py
