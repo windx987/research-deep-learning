@@ -59,18 +59,18 @@ image, label = train_data[0]
 print(f"Image shape: {image.shape} -> [color_channels, height, width]") 
 print(f"Image label: {class_names[label]}")
 
-fig = plt.figure(figsize=(3, 3))
-row, cols = 3, 3
-for i in range(1, row*cols+1):
-    random_idx = torch.randint(0, len(train_data), size=[1]).item()
-    img, label = train_data[random_idx]
-    img_squeeze = img.squeeze()
-    fig.add_subplot(row, cols, i)
-    plt.imshow(img_squeeze, cmap="gray")
-    plt.title(label=class_names[label])
-    plt.axis(False)
+# fig = plt.figure(figsize=(3, 3))
+# row, cols = 3, 3
+# for i in range(1, row*cols+1):
+#     random_idx = torch.randint(0, len(train_data), size=[1]).item()
+#     img, label = train_data[random_idx]
+#     img_squeeze = img.squeeze()
+#     fig.add_subplot(row, cols, i)
+#     plt.imshow(img_squeeze, cmap="gray")
+#     plt.title(label=class_names[label])
+#     plt.axis(False)
 
-plt.show()
+# plt.show()
 
 # Setup the batch size hyperparameter
 BATCH_SIZE = 32
@@ -203,7 +203,7 @@ optimizer = torch.optim.SGD(params=model_cpu.parameters(), lr=0.1)
 # Measure time
 train_time_start_on_cpu = timer() 
 
-epochs = 5
+epochs = 0
 for epoch in tqdm(range(epochs)):
     print(f"Epoch: {epoch}\n-------")
     train_step(model=model_cpu, data_loader=train_dataloader, loss_fn=loss_fn, optimizer=optimizer, accuracy_fn=accuracy_fn, device=device)
@@ -228,7 +228,7 @@ optimizer = torch.optim.SGD(params=model_gpu.parameters(), lr=0.1)
 # Measure time
 train_time_start_on_gpu = timer() 
 
-epochs = 5
+epochs = 0
 for epoch in tqdm(range(epochs)):
     print(f"Epoch: {epoch}\n-------")
     train_step(model=model_gpu, data_loader=train_dataloader, loss_fn=loss_fn, optimizer=optimizer, accuracy_fn=accuracy_fn, device=device)
@@ -238,3 +238,77 @@ for epoch in tqdm(range(epochs)):
 train_time_end_on_gpu = timer()
 total_train_time_on_gpu = print_train_time(start=train_time_start_on_gpu, end=train_time_end_on_gpu, device=device)
 
+import random
+
+test_samples = [] 
+test_labels = []
+
+for sample, label in random.sample(list(test_data), k=9):
+  test_samples.append(sample)
+  test_labels.append(label)
+
+plt.figure(figsize=(9, 9))
+nrows = 3
+ncols = 3
+
+for i, sample in enumerate(test_samples):
+    random_idx = torch.randint(0, len(train_data), size=[1]).item()
+    # Get image and labels from the test data
+    img, label = test_data[i]
+
+    # Plot the sample
+    plt.subplot(nrows, ncols, i+1)
+    plt.imshow(sample.squeeze(), cmap="gray")
+
+    # Make prediction on image
+    model_pred_logits = model_gpu(img.unsqueeze(dim=0).to(device))
+    model_pred_probs = torch.softmax(model_pred_logits, dim=1)
+    model_pred_label = torch.argmax(model_pred_probs, dim=1)
+
+    # Plot the prediction
+    title_text = plt.title(f"Truth: {label} | Pred: {model_pred_label.cpu().item()}")
+
+    # Check for equality between pred and truth and change color of title text
+    if label == model_pred_label:
+        plt.title(title_text, fontsize=10, c="g") 
+    else:
+        plt.title(title_text, fontsize=10, c="r") 
+    plt.axis(False)
+
+plt.show()
+
+y_preds = []
+model_gpu.eval()
+with torch.inference_mode():
+  for X, y in tqdm(test_dataloader, desc="Making predictions..."):
+    # Send the data and targets to target device
+    X, y = X.to(device), y.to(device)
+    # Do the forward pass
+    y_logit = model_gpu(X)
+    # Turn predictions from logits -> prediction probabilities -> prediction labels
+    y_pred = torch.softmax(y_logit.squeeze(), dim=0).argmax(dim=1)
+    # Put prediction on CPU for evaluation
+    y_preds.append(y_pred.cpu())
+
+from torchmetrics import ConfusionMatrix
+from mlxtend.plotting import plot_confusion_matrix
+
+confmat = ConfusionMatrix(task="multiclass", num_classes=len(class_names))
+confmat_tensor = confmat(preds=torch.cat(y_preds),
+                         target=test_data.targets)
+
+plot_confusion_matrix(conf_mat=confmat_tensor.numpy(), class_names=class_names, figsize=(10, 7))
+# plt.show()
+
+## various hyperparameter settings ##
+random_tensor = torch.rand([1, 3, 64, 64])
+
+conv_layer = nn.Conv2d(in_channels=3,
+                       out_channels=64,
+                       kernel_size=3,
+                       stride=2,
+                       padding=1)
+
+print(f"Random tensor original shape: {random_tensor.shape}")
+random_tensor_through_conv_layer = conv_layer(random_tensor)
+print(f"Random tensor through conv layer shape: {random_tensor_through_conv_layer.shape}")
