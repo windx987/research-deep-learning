@@ -298,17 +298,5 @@ confmat_tensor = confmat(preds=torch.cat(y_preds),
                          target=test_data.targets)
 
 plot_confusion_matrix(conf_mat=confmat_tensor.numpy(), class_names=class_names, figsize=(10, 7))
-# plt.show()
+plt.show()
 
-## various hyperparameter settings ##
-random_tensor = torch.rand([1, 3, 64, 64])
-
-conv_layer = nn.Conv2d(in_channels=3,
-                       out_channels=64,
-                       kernel_size=3,
-                       stride=2,
-                       padding=1)
-
-print(f"Random tensor original shape: {random_tensor.shape}")
-random_tensor_through_conv_layer = conv_layer(random_tensor)
-print(f"Random tensor through conv layer shape: {random_tensor_through_conv_layer.shape}")
