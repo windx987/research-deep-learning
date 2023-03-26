@@ -56,3 +56,61 @@ test_data = datasets.FashionMNIST(
     transform=transforms.ToTensor(), # how do we want to transform the data?
     target_transform=None # how do we want to transform the labels/targets?
 )
+
+class_names = train_data.classes 
+class_to_idx = train_data.class_to_idx  
+
+# Setup the batch size hyperparameter
+BATCH_SIZE = 32
+
+# Setup dataloader
+train_dataloader = DataLoader(dataset=train_data, batch_size=BATCH_SIZE, shuffle=True)
+test_dataloader = DataLoader(dataset=test_data, batch_size=BATCH_SIZE, shuffle=False)
+
+device = "cuda" if torch.cuda.is_available() else "cpu"
+print(f"Using device: {device}")
+
+# create CCN
+class FashionMNISTModel(nn.Module):
+    def __init__(self, input_shape:int, hidden_units:int, output_shape:int):
+        super().__init__()
+        self.conv_block1 = nn.Sequential(
+        nn.Conv2d(in_channels=input_shape,
+                  out_channels=hidden_units,
+                  kernel_size=3,
+                  stride=1,
+                  padding=1), # values we can set ourselves in our NN's are called hyperparameters
+        nn.ReLU(),
+        nn.Conv2d(in_channels=hidden_units,
+                  out_channels=hidden_units,
+                  kernel_size=3,
+                  stride=1,
+                  padding=1),
+        nn.ReLU(),
+        nn.MaxPool2d(kernel_size=2)
+        )
+        self.conv_block2 = nn.Sequential(
+        nn.Conv2d(in_channels=hidden_units,
+                  out_channels=hidden_units,
+                  kernel_size=3,
+                  stride=1,
+                  padding=1),
+        nn.ReLU(),
+        nn.Conv2d(in_channels=hidden_units,
+                  out_channels=hidden_units,
+                  kernel_size=3,
+                  stride=1,
+                  padding=1),
+        nn.ReLU(),
+        nn.MaxPool2d(kernel_size=2)
+        )
+        self.classifier = nn.Sequential(
+        nn.Flatten(),
+        nn.Linear(in_features=hidden_units*7*7,
+                  out_features=output_shape)
+        )
+
+    def forward(self, x):
+        return self.classifier(self.conv_block2(self.conv_block1(x)))
+
+model = FashionMNISTModel(input_shape=,hidden_units=,output_shape=).to(device)
