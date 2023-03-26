@@ -70,6 +70,66 @@ test_dataloader = DataLoader(dataset=test_data, batch_size=BATCH_SIZE, shuffle=F
 device = "cuda" if torch.cuda.is_available() else "cpu"
 print(f"Using device: {device}")
 
+def print_train_time(start: float,
+                     end: float, 
+                     device: torch.device = None):
+  """Prints difference between start and end time."""
+  total_time = end - start
+  print(f"Train time on {device}: {total_time:.3f} seconds")
+  return total_time
+
+def train_step(model: torch.nn.Module,
+               data_loader: torch.utils.data.DataLoader,
+               loss_fn: torch.nn.Module,
+               optimizer: torch.optim.Optimizer,
+               accuracy_fn,
+               device: torch.device = device):
+  train_loss, train_acc = 0, 0
+
+  model.train()
+
+  for batch, (X, y) in enumerate(data_loader):
+    X, y = X.to(device), y.to(device)
+
+    y_pred = model(X)
+
+    loss = loss_fn(y_pred, y)
+    train_loss += loss # accumulate train loss
+    train_acc += accuracy_fn(y_true=y,
+                             y_pred=y_pred.argmax(dim=1)) # go from logits -> prediction labels
+    optimizer.zero_grad()
+    loss.backward()
+    optimizer.step()
+
+    if batch % 400 == 0:
+      print(f"Looked at {batch * len(X)}/{len(train_dataloader.dataset)} samples.")
+  
+  train_loss /= len(data_loader)
+  train_acc /= len(data_loader)
+  print(f"Train loss: {train_loss:.5f} | Train acc: {train_acc:.2f}")
+
+def test_step(model: torch.nn.Module,
+              data_loader: torch.utils.data.DataLoader, 
+              loss_fn: torch.nn.Module,
+              accuracy_fn,
+              device: torch.device = device):
+  
+  test_loss, test_acc = 0, 0
+  model.eval()
+
+  with torch.inference_mode():
+    for X, y in data_loader:
+      X, y = X.to(device), y.to(device)
+
+      test_pred = model(X)
+      test_loss += loss_fn(test_pred, y)
+      test_acc += accuracy_fn(y_true=y,
+                              y_pred=test_pred.argmax(dim=1)) # go from logits -> prediction labels 
+
+    test_loss /= len(data_loader)
+    test_acc /= len(data_loader)
+    print(f"Test loss: {test_loss:.5f} | Test acc: {test_acc:.2f}\n")
+
 # create CCN
 class FashionMNISTModel(nn.Module):
     def __init__(self, input_shape:int, hidden_units:int, output_shape:int):
@@ -79,7 +139,7 @@ class FashionMNISTModel(nn.Module):
                   out_channels=hidden_units,
                   kernel_size=3,
                   stride=1,
-                  padding=1), # values we can set ourselves in our NN's are called hyperparameters
+                  padding=1),
         nn.ReLU(),
         nn.Conv2d(in_channels=hidden_units,
                   out_channels=hidden_units,
@@ -113,4 +173,23 @@ class FashionMNISTModel(nn.Module):
     def forward(self, x):
         return self.classifier(self.conv_block2(self.conv_block1(x)))
 
-model = FashionMNISTModel(input_shape=,hidden_units=,output_shape=).to(device)
+device = "cuda" if torch.cuda.is_available() else "cpu"
+print(f"Using device: {device}")
+
+model = FashionMNISTModel(input_shape=1,hidden_units=10,output_shape=len(class_names)).to(device)
+
+loss_fn = nn.CrossEntropyLoss()
+optimizer = torch.optim.SGD(params=model.parameters(), lr=0.1)
+
+# Measure time
+train_time_start_on_model = timer() 
+
+epochs = 0
+for epoch in tqdm(range(epochs)):
+    print(f"Epoch: {epoch}\n-------")
+    train_step(model=model, data_loader=train_dataloader, loss_fn=loss_fn, optimizer=optimizer, accuracy_fn=accuracy_fn, device=device)
+    test_step(model=model, data_loader=test_dataloader, loss_fn=loss_fn, accuracy_fn=accuracy_fn, device=device)
+    
+# Measure time
+train_time_end_on_model = timer()
+total_train_time_on_model = print_train_time(start=train_time_start_on_model, end=train_time_end_on_model, device=device)
