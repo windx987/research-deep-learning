@@ -41,3 +41,9 @@ def walk_through_dir(dir_path):
     print(f"There are {len(dirnames)} directories and {len(filenames)} images in '{dirpath}'.")
 
 walk_through_dir(image_path)
+
+# Setup train and testing paths
+train_dir = image_path / "train"
+test_dir = image_path / "test"
+
+print(train_dir, test_dir)
