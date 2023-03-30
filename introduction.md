@@ -1,0 +1,12 @@
+OHAO! I'll update my progress and share what I've learned in this note.
+
+CS230 stanford https://cs230.stanford.edu/ 
+https://stanford.edu/~shervine/teaching/cs-230/
+
+In the last 1-2 weeks i have learned basic nerual network and basic module.
+i will explain and sumary to you here. 
+
+so frist is you have to understand concept of "Deel learning"
+
+what is DL, ML, AI ?
+!
