@@ -133,3 +133,13 @@ plot_transformed_images(image_paths=image_path_list,
                         n=3,
                         seed=None)
 
+# Use ImageFolder to create dataset(s)
+from torchvision import datasets
+train_data = datasets.ImageFolder(root=train_dir,
+                                  transform=data_transform, # a transform for the data
+                                  target_transform=None) # a transform for the label/target 
+
+test_data = datasets.ImageFolder(root=test_dir,
+                                 transform=data_transform)
+
+print(train_data, test_data)
