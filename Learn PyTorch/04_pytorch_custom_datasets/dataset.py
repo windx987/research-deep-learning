@@ -13,7 +13,7 @@ import zipfile
 from pathlib import Path
 
 # Setup path to a data folder
-data_path = Path("data/")
+data_path = Path(".data/")
 image_path = data_path / "pizza_steak_sushi"
 
 # # If the image folder doesn't exist, download it and prepare it...
@@ -67,11 +67,11 @@ image_class = random_image_path.parent.stem
 img = Image.open(random_image_path)
 
 # # 5. Print metadata 
-# print(f"Random image path: {random_image_path}")
-# print(f"Image class: {image_class}")
-# print(f"Image height: {img.height}")
-# print(f"Image width: {img.width}")
-# img.show()
+print(f"Random image path: {random_image_path}")
+print(f"Image class: {image_class}")
+print(f"Image height: {img.height}")
+print(f"Image width: {img.width}")
+img.show()
 
 import numpy as np
 import matplotlib.pyplot as plt
