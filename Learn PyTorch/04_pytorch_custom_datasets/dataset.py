@@ -176,3 +176,23 @@ plt.imshow(img_permute)
 plt.axis("off")
 plt.title(class_names[label], fontsize=14)
      
+# Turn loaded images into DataLoader
+import os
+os.cpu_count()
+
+# Turn train and test datasets into DataLoader's
+from torch.utils.data import DataLoader
+BATCH_SIZE=1
+train_dataloader = DataLoader(dataset=train_data,
+                              batch_size=BATCH_SIZE,
+                              num_workers=1,
+                              shuffle=True)
+
+test_dataloader = DataLoader(dataset=test_data,
+                             batch_size=BATCH_SIZE,
+                             num_workers=1,
+                             shuffle=False)
+
+print(train_dataloader, test_dataloader)
+print(len(train_dataloader), len(test_dataloader))
+
