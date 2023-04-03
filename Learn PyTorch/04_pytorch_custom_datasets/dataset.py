@@ -140,5 +140,26 @@ train_data = datasets.ImageFolder(root=train_dir,
 
 test_data = datasets.ImageFolder(root=test_dir,
                                  transform=data_transform)
-
 print(train_data, test_data)
+
+# Get class names as list
+class_names = train_data.classes
+class_names
+
+# Get class names as dict
+class_dict = train_data.class_to_idx
+class_dict
+
+# Check the lengths of our dataset
+len(train_data), len(test_data)
+
+train_data.samples[0]
+
+# Index on the train_data Dataset to get a single image and label
+img, label = train_data[0][0], train_data[0][1]
+print(f"Image tensor:\n {img}")
+print(f"Image shape: {img.shape}")
+print(f"Image datatype: {img.dtype}")
+print(f"Image label: {label}")
+print(f"Label datatype: {type(label)}")
+
