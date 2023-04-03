@@ -163,3 +163,16 @@ print(f"Image datatype: {img.dtype}")
 print(f"Image label: {label}")
 print(f"Label datatype: {type(label)}")
 
+# Rearrange the order dimensions
+img_permute = img.permute(1, 2, 0)
+
+# Print out different shapes
+print(f"Original shape: {img.shape} -> [color_channels, height, width]")
+print(f"Image permute: {img_permute.shape} -> [height, width, color_channels]")
+
+# Plot the image
+plt.figure(figsize=(10, 7))
+plt.imshow(img_permute)
+plt.axis("off")
+plt.title(class_names[label], fontsize=14)
+     
