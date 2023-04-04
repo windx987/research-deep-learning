@@ -1,6 +1,6 @@
 OHAO! I'll update my progress and share what I've learned in this note.
 
-CS230 stanford https://cs230.stanford.edu/ 
+CS230 stanford : https://cs230.stanford.edu/ 
 https://stanford.edu/~shervine/teaching/cs-230/
 
 In the last 1-2 weeks i have learned basic nerual network and basic module.
@@ -8,6 +8,8 @@ i will explain and sumary to you here.
 
 so frist is you have to understand concept of "Deep learning"
 
-what is DL?
-easy to understand answer ?
->> ??
+i'll expain with that easy to understand.
+>> deep learning is a subset of machine learning, which is essentially a neural network with three or more layers.
+    1. input layers
+    2. hidden layers ( is neural network )
+    3. output layers
