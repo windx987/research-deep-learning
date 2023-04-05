@@ -196,3 +196,23 @@ test_dataloader = DataLoader(dataset=test_data,
 print(train_dataloader, test_dataloader)
 print(len(train_dataloader), len(test_dataloader))
 
+img, label = next(iter(train_dataloader))
+
+# Batch size will now be 1, you can change the batch size if you like
+print(f"Image shape: {img.shape} -> [batch_size, color_channels, height, width]")
+print(f"Label shape: {label.shape}")
+
+
+# Loading Image Data with a Custom Dataset
+
+import os
+import pathlib
+import torch
+
+from PIL import Image
+from torch.utils.data import Dataset
+from torchvision import transforms
+from typing import Tuple, Dict, List
+
+# Instance of torchvision.datasets.ImageFolder()
+print(train_data.classes, train_data.class_to_idx)
