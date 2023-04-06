@@ -15,5 +15,8 @@ i'll expain with that easy to understand.
     2. hidden layers ( is neural network )
     3. output layers
 
+supervised learning and unsupervised learning
+>>
+
 what is architecture that commonly using in deep learning model?
 >> ANN, CNN, RNN
