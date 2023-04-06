@@ -9,7 +9,11 @@ i will explain and sumary to you here.
 so frist is you have to understand concept of "Deep learning"
 
 i'll expain with that easy to understand.
+
 >> deep learning is a subset of machine learning, which is essentially a neural network with three or more layers.
     1. input layers
     2. hidden layers ( is neural network )
     3. output layers
+
+what is architecture that commonly using in deep learning model?
+>> ANN, CNN, RNN
