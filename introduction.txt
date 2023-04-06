@@ -15,8 +15,14 @@ i'll expain with that easy to understand.
     2. hidden layers ( is neural network )
     3. output layers
 
-supervised learning and unsupervised learning
->>
+classifies deep learning architectures into supervised and unsupervised
+
+Supervised learning
+>> supervised learning refers to the problem space wherein the target to be predicted is clearly labelled within the data that is used for training.
+
+Unsupervised learning
+>> unsupervised learning refers to the problem space wherein there is no target label within the data that is used for training.
 
 what is architecture that commonly using in deep learning model?
 >> ANN, CNN, RNN
+
