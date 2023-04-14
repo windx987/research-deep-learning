@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html style="font-family:'Courier New'">
 <head>
 	<title>User Orders - Admin Panel</title>
 	<link rel="stylesheet" type="text/css" href="style.css">
@@ -16,8 +16,10 @@
 					<th>Transaction ID</th>
 					<th>Total</th>
 					<th>Address</th>
-					<th>Details</th>
-					<th>Confirm</th>
+					<th></th> 
+					<th></th>
+					<!-- Details -->
+					<!-- Confirm -->
 				</tr>
 			</thead>
 			<tbody>
@@ -37,6 +39,22 @@
 					<td><button class="details-btn" onclick="openDetailsPopup()">Details</button></td>
 					<td><button class="confirm-btn" onclick="openConfirmPopup()">Confirm</button></td>
 				</tr>
+				<tr>
+					<td>user3@example.com</td>
+					<td>67890</td>
+					<td>$25.00</td>
+					<td>Row 3, Column 1</td>
+					<td><button class="details-btn" onclick="openDetailsPopup()">Details</button></td>
+					<td><button class="confirm-btn" onclick="openConfirmPopup()">Confirm</button></td>
+				</tr>
+				<tr>
+					<td>user4@example.com</td>
+					<td>67890</td>
+					<td>$25.00</td>
+					<td>Row 3, Column 2</td>
+					<td><button class="details-btn" onclick="openDetailsPopup()">Details</button></td>
+					<td><button class="confirm-btn" onclick="openConfirmPopup()">Confirm</button></td>
+				</tr>
 				<!-- Add more rows for additional user orders -->
 			</tbody>
 		</table>
@@ -45,17 +63,15 @@
 	<!-- Details Popup -->
 	<div id="details-popup" class="popup">
 		<div class="popup-content">
-			<h2>Order Details</h2>
-			<p>List of products:</p>
+			<h2>Items Detail</h2>
+			<!-- <p>List of products:</p> -->
 			<ul>
-                
 				<li>Product 1<td> $50.00 </td></li>
                 option1, option2, option3
 				<li> Product 2 <td> $50.00 </td></li>
                 option1, option2, option3
 				<li> Product 3 <td> $50.00 </td></li>
                 option1, option2, option3
-
 				<!-- Add more product items as needed -->
 			</ul>
 			<button class="close-btn" onclick="closeDetailsPopup()">Close</button>
@@ -68,11 +84,11 @@
 			<h2>Confirm Order</h2>
 			<form>
 				<label for="shipping-method">Shipping Method:</label>
-				<input type="text" id="shipping-method" name="shipping-method"><br><br>
+				<input class="textbox" type="text" id="shipping-method" name="shipping-method"><br><br>
 				<label for="date">Date:</label>
-				<input type="date" id="date" name="date"><br><br>
+				<input class="textbox" type="date" id="date" name="date"><br><br>
 				<label for="tracking-no">Tracking Number:</label>
-				<input type="text" id="tracking-no" name="tracking-no"><br><br>
+				<input class="textbox" type="text" id="tracking-no" name="tracking-no"><br><br>
 				<button class="confirm-btn" type="submit">Confirm</button>
 			</form>
 			<button class="close-btn" onclick="closeConfirmPopup()">Cancel</button>
